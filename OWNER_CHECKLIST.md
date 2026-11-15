@@ -22,7 +22,8 @@ Przed startem produkcyjnym Jacek powinien uzupełnić w panelu `/admin`:
 ## Techniczne (z programistą / hostingiem)
 
 - [ ] Konto Resend + `RESEND_API_KEY`, `CONTACT_EMAIL_TO`, `EMAIL_FROM`
-- [ ] Bucket Cloudflare R2 + zmienne `S3_*`
+- [ ] Bucket Cloudflare R2 `szescstrun-media` + zmienne `R2_*`
+- [ ] `R2_PUBLIC_URL` (r2.dev lub CDN) — nie używać endpointu API
 - [ ] Hosting Node (Railway / Render / Fly) + managed Postgres
 - [ ] DNS w Zenbox bez naruszania MX/SPF/DKIM/DMARC
 - [ ] Pierwszy administrator utworzony na `/admin`

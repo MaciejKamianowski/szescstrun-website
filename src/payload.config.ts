@@ -16,11 +16,17 @@ import { Videos } from './collections/Videos'
 import { Testimonials } from './collections/Testimonials'
 import { Pages } from './collections/Pages'
 import { SiteSettings } from './globals/SiteSettings'
+import { buildPublicMediaUrl, resolveObjectStorageConfig } from './lib/storage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const s3Enabled = Boolean(process.env.S3_BUCKET && process.env.S3_ENDPOINT)
+const storage = resolveObjectStorageConfig()
+
+if (storage.configMessage) {
+  // Clear startup guidance — never emit S3 API endpoints as browser media URLs.
+  console.info(storage.configMessage)
+}
 
 export default buildConfig({
   admin: {
@@ -56,27 +62,25 @@ export default buildConfig({
   sharp,
   plugins: [
     s3Storage({
-      enabled: s3Enabled,
+      enabled: storage.enabled,
+      // When enabled, plugin disables local disk for Media (Railway ephemeral FS safe).
+      disableLocalStorage: true,
       collections: {
         media: {
           prefix: 'media',
-          generateFileURL: ({ filename: fileName, prefix }) => {
-            const key = prefix ? `${prefix}/${fileName}` : fileName
-            const publicUrl = process.env.S3_PUBLIC_URL
-            if (publicUrl) return `${publicUrl.replace(/\/$/, '')}/${key}`
-            return `${process.env.NEXT_PUBLIC_SERVER_URL}/api/media/file/${fileName}`
-          },
+          generateFileURL: ({ filename: fileName, prefix }) =>
+            buildPublicMediaUrl(storage, fileName, typeof prefix === 'string' ? prefix : 'media'),
         },
       },
-      bucket: process.env.S3_BUCKET || '',
+      bucket: storage.bucket,
       config: {
         credentials: {
-          accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+          accessKeyId: storage.accessKeyId,
+          secretAccessKey: storage.secretAccessKey,
         },
-        region: process.env.S3_REGION || 'auto',
-        endpoint: process.env.S3_ENDPOINT,
-        forcePathStyle: process.env.S3_FORCE_PATH_STYLE !== 'false',
+        region: storage.region,
+        endpoint: storage.endpoint || undefined,
+        forcePathStyle: storage.forcePathStyle,
       },
     }),
   ],

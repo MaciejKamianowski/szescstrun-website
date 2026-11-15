@@ -40,13 +40,16 @@ RESEND_API_KEY=...
 CONTACT_EMAIL_TO=...              # skrzynka Jacka
 EMAIL_FROM="Sześć Strun <noreply@twoja-domena.pl>"
 
-S3_BUCKET=...
-S3_ACCESS_KEY_ID=...
-S3_SECRET_ACCESS_KEY=...
-S3_ENDPOINT=https://<accountid>.r2.cloudflarestorage.com
-S3_REGION=auto
-S3_FORCE_PATH_STYLE=true
-S3_PUBLIC_URL=https://media.szescstrun.pl   # lub *.r2.dev
+# Cloudflare R2 — media (Payload @payloadcms/storage-s3)
+R2_BUCKET=szescstrun-media
+R2_ACCESS_KEY_ID=...
+R2_SECRET_ACCESS_KEY=...
+R2_ENDPOINT=https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+R2_REGION=auto
+R2_FORCE_PATH_STYLE=true
+# Publiczny odczyt (NIE endpoint API):
+R2_PUBLIC_URL=https://pub-<id>.r2.dev
+# albo później: https://media.szescstrun.pl
 ```
 
 ## Migracje
@@ -106,14 +109,35 @@ Migracje w repo:
 
 Bezpieczeństwo: nigdy `migrate:fresh` / `migrate:reset` / `migrate:refresh` na produkcji.
 
-## Storage mediów
+## Storage mediów (Cloudflare R2)
 
-1. Utwórz bucket R2.
-2. Włącz publiczny dostęp (custom domain lub r2.dev).
-3. Utwórz API token z uprawnieniami Object Read & Write.
-4. Ustaw zmienne `S3_*` / `S3_PUBLIC_URL`.
+Projekt używa oficjalnego `@payloadcms/storage-s3` (bez równoległego uploadera).
 
-Bez S3 media zapisują się lokalnie w `/media` — **nie nadaje się** do efemerycznych dysków PaaS.
+### Wymagane zmienne (serwerowe)
+
+| Zmienna | Opis |
+| --- | --- |
+| `R2_BUCKET` | np. `szescstrun-media` |
+| `R2_ACCESS_KEY_ID` | Access Key ID tokenu R2 |
+| `R2_SECRET_ACCESS_KEY` | Secret Access Key |
+| `R2_ENDPOINT` | `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` (tylko API S3) |
+| `R2_REGION` | `auto` |
+| `R2_FORCE_PATH_STYLE` | `true` (domyślnie) |
+| `R2_PUBLIC_URL` | Publiczny CDN / `*.r2.dev` **bez** trailing slash |
+
+Aliasy `S3_*` nadal działają jako fallback.
+
+### Publiczny odczyt
+
+1. W Cloudflare R2 włącz **Public access** (R2.dev subdomain) albo podłącz custom domain.
+2. Ustaw `R2_PUBLIC_URL` na ten adres (np. `https://pub-xxxxx.r2.dev`).
+3. **Nigdy** nie wstawiaj `R2_ENDPOINT` (`*.r2.cloudflarestorage.com`) jako URL obrazów.
+
+Bez `R2_PUBLIC_URL` aplikacja działa w trybie **proxy**: przeglądarka bierze pliki z `/api/media/file/…`, a serwer pobiera je z R2 przy użyciu kluczy (bezpieczne, ale wolniejsze).
+
+Logo i zdjęcie Jacka w `public/images/` pozostają plikami statycznymi — nie trzeba ich przenosić do R2.
+
+Bez R2 media lokalne trafiają do `/media` na dysku — **nie** używaj tego na Railway (dysk efemeryczny).
 
 ## Domeny (Zenbox)
 

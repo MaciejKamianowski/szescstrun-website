@@ -6,6 +6,38 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
+type ImageRemotePattern = {
+  protocol?: 'http' | 'https'
+  hostname: string
+  pathname?: string
+}
+
+function mediaRemotePatterns(): ImageRemotePattern[] {
+  const patterns: ImageRemotePattern[] = [
+    { protocol: 'https', hostname: 'i.ytimg.com' },
+    { protocol: 'https', hostname: '**.r2.dev' },
+  ]
+
+  const publicUrl = process.env.R2_PUBLIC_URL || process.env.S3_PUBLIC_URL
+  if (publicUrl) {
+    try {
+      const parsed = new URL(publicUrl)
+      const protocol = parsed.protocol.replace(':', '') as 'http' | 'https'
+      if (protocol === 'http' || protocol === 'https') {
+        patterns.push({
+          protocol,
+          hostname: parsed.hostname,
+          pathname: '/**',
+        })
+      }
+    } catch {
+      // ignore invalid public URL at build time
+    }
+  }
+
+  return patterns
+}
+
 const nextConfig: NextConfig = {
   // Required by Dockerfile runner stage (Next standalone output)
   output: 'standalone',
@@ -21,20 +53,8 @@ const nextConfig: NextConfig = {
         pathname: '/icons/**',
       },
     ],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'i.ytimg.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.r2.dev',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.cloudflarestorage.com',
-      },
-    ],
+    // Do NOT allow *.r2.cloudflarestorage.com — that is the private S3 API endpoint.
+    remotePatterns: mediaRemotePatterns(),
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

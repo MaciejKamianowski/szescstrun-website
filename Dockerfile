@@ -29,8 +29,11 @@ COPY . .
 # skips prerendering DB-backed pages. Do not pass DATABASE_URL here.
 ARG PAYLOAD_SECRET=build-time-placeholder-not-for-production
 ARG NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+# Optional at build time — allows next/image remotePatterns for the public media host
+ARG R2_PUBLIC_URL=
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
+ENV R2_PUBLIC_URL=$R2_PUBLIC_URL
 ENV DATABASE_URL=
 
 RUN corepack enable && corepack prepare pnpm@10.34.9 --activate \
