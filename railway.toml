@@ -1,0 +1,11 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+# Runs after a successful image build, with access to Railway private network
+# (Postgres via ${{Postgres.DATABASE_URL}} / *.railway.internal).
+# Do NOT run migrations during `docker build`.
+preDeployCommand = "pnpm exec payload migrate"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

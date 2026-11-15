@@ -24,36 +24,45 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build-time env (Railway injects these; locally pass --build-arg)
-ARG DATABASE_URL
-ARG PAYLOAD_SECRET
+# Build must NOT require Postgres. Railway private hostnames (*.railway.internal)
+# are unavailable during `docker build`. CMS routes use `connection()` so Next
+# skips prerendering DB-backed pages. Do not pass DATABASE_URL here.
+ARG PAYLOAD_SECRET=build-time-placeholder-not-for-production
 ARG NEXT_PUBLIC_SERVER_URL=http://localhost:3000
-ENV DATABASE_URL=$DATABASE_URL
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
+# Ensure no accidental build-time DB connection from host env leakage
+ENV DATABASE_URL=
 
 RUN corepack enable && corepack prepare pnpm@10.34.9 --activate \
   && pnpm --version \
   && pnpm run build
 
-# Production image, copy all the files and run next
+# Production image
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup --system --gid 1001 nodejs \
-  && adduser --system --uid 1001 nextjs
+RUN apk add --no-cache libc6-compat \
+  && addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 nextjs \
+  && corepack enable \
+  && corepack prepare pnpm@10.34.9 --activate
 
-COPY --from=builder /app/public ./public
-
-RUN mkdir .next && chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
+# Next.js standalone server
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Payload CLI + migrations for Railway pre-deploy (private network available then).
+# Not used during `docker build`.
+COPY --from=builder --chown=nextjs:nodejs /app/package.json /app/pnpm-lock.yaml ./
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts ./
 
 USER nextjs
 
@@ -62,5 +71,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-# server.js is created by next build from the standalone output
+# Runtime only — migrations belong in Railway Pre-Deploy Command
 CMD ["node", "server.js"]

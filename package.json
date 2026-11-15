@@ -20,7 +20,8 @@
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-example.ts",
     "format": "prettier --write .",
-    "ci": "payload migrate && pnpm build"
+    "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
+    "ci": "pnpm build"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

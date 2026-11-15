@@ -53,18 +53,25 @@ S3_PUBLIC_URL=https://media.szescstrun.pl   # lub *.r2.dev
 
 Lokalnie (dev) Payload używa `push` schematu do Postgres (`push: true` gdy `NODE_ENV !== 'production'`).
 
-Na produkcji ustaw `NODE_ENV=production` (wyłącza push) i **przed startem** uruchom migracje ręcznie (nie są auto-odpalane przy `next build`, żeby uniknąć interaktywnych promptów):
+Na produkcji ustaw `NODE_ENV=production` (wyłącza push). Migracje **nie mogą** działać podczas `docker build` / `next build` — prywatny host Railway (`*.railway.internal`) jest niedostępny w fazie budowania obrazu.
+
+### Railway (Docker)
+
+1. `DATABASE_URL` zostaje prywatne: `${{Postgres.DATABASE_URL}}` (bez publicznego proxy).
+2. Build obrazu (`Dockerfile`) uruchamia wyłącznie `pnpm build` — bez migracji i bez wymaganego Postgresa.
+3. Pre-Deploy Command (w `railway.toml`): `pnpm exec payload migrate` — ma dostęp do prywatnej sieci.
+4. Potem start: `node server.js` (standalone).
+
+### Lokalnie / ręcznie
 
 ```bash
 pnpm payload migrate:create   # tylko gdy zmieniasz schemat
-pnpm payload migrate          # obowiązkowo przed deployem / startem
+pnpm migrate                  # albo: pnpm exec payload migrate
 pnpm build
 pnpm start
 ```
 
-Skrypt `pnpm ci` wykonuje `payload migrate && pnpm build`.
-
-Migracja początkowa: `src/migrations/20261115_123647_initial.ts`.
+Migracje: `src/migrations/*.ts`.
 
 ## Storage mediów
 
