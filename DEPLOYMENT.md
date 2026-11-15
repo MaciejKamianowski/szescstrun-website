@@ -59,13 +59,20 @@ Na produkcji ustaw `NODE_ENV=production` (wyłącza push). Migracje **nie mogą*
 
 1. `DATABASE_URL` zostaje prywatne: `${{Postgres.DATABASE_URL}}` (bez publicznego proxy).
 2. Build obrazu (`Dockerfile`) uruchamia wyłącznie `pnpm build` — bez migracji i bez Postgresa.
-3. **Pre-Deploy Command** (ustaw w Railway albo przez `railway.toml`):
+3. **Pre-Deploy Command** (Config as Code: `railway.toml` / `railway.json`, albo ręcznie w UI):
 
 ```bash
 sh ./scripts/run-migrations.sh
 ```
 
-   Równoważnie (to samo wywołanie wewnątrz skryptu):
+   W Railway UI (Settings → Deploy → Pre-deploy Command) wklej dokładnie tę komendę.
+   W Config as Code musi być **tablica**, np.:
+
+```toml
+preDeployCommand = ["sh ./scripts/run-migrations.sh"]
+```
+
+   Równoważnie wewnątrz skryptu:
 
 ```bash
 node ./node_modules/payload/bin.js migrate
@@ -75,6 +82,7 @@ node ./node_modules/payload/bin.js migrate
    - ma dostęp do prywatnej sieci Railway,
    - **nie** pobiera zależności z internetu (używa `node_modules` z obrazu),
    - błąd migracji zatrzymuje deployment.
+   - W logach deployu szukaj kroku **Pre-deploy** i linii `[migrate] Starting Payload migrations`.
 
 4. Start aplikacji: `node server.js` (standalone).
 
