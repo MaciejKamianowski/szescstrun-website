@@ -28,7 +28,8 @@ COPY . .
 # are unavailable during `docker build`. CMS routes use `connection()` so Next
 # skips prerendering DB-backed pages. Do not pass DATABASE_URL here.
 ARG PAYLOAD_SECRET=build-time-placeholder-not-for-production
-ARG NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+# Inlined into the Next bundle at build time — must be the production canonical, not localhost.
+ARG NEXT_PUBLIC_SERVER_URL=https://www.szescstrun.pl
 # Optional at build time — allows next/image remotePatterns for the public media host
 ARG R2_PUBLIC_URL=
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET

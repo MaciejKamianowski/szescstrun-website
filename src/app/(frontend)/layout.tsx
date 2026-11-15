@@ -50,9 +50,6 @@ export default async function FrontendLayout({ children }: { children: React.Rea
 
   return (
     <html lang="pl" className={GeistSans.variable}>
-      <head>
-        <link rel="canonical" href={getServerUrl()} />
-      </head>
       <body className="flex min-h-screen flex-col">
         <Header ctaLabel={settings.heroCTA || 'Umów lekcję'} logo={logo} />
         <main className="flex-1">{children}</main>

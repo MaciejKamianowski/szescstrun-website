@@ -1,3 +1,5 @@
+import { getServerUrl } from '@/lib/utils'
+
 /**
  * Cloudflare R2 / S3-compatible storage configuration for Payload.
  *
@@ -113,7 +115,7 @@ export function buildPublicMediaUrl(
   storage: ObjectStorageConfig,
   filename: string,
   prefix = 'media',
-  serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || '',
+  serverUrl = getServerUrl(),
 ): string {
   const key = prefix ? `${prefix.replace(/\/$/, '')}/${filename}` : filename
 

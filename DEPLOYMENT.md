@@ -34,7 +34,8 @@ Skopiuj z `.env.example` i uzupełnij:
 ```bash
 DATABASE_URL=postgresql://...
 PAYLOAD_SECRET=...                # unikalny, długi sekret
-NEXT_PUBLIC_SERVER_URL=https://szescstrun.pl
+NEXT_PUBLIC_SERVER_URL=https://www.szescstrun.pl
+# Opcjonalnie (runtime, bez rebuild): SERVER_URL=https://www.szescstrun.pl
 
 # Resend — dopiero po statusie Verified dla domeny mail.szescstrun.pl
 RESEND_API_KEY=...
@@ -147,7 +148,7 @@ Bez R2 media lokalne trafiają do `/media` na dysku — **nie** używaj tego na 
 2. U hosta aplikacji dodaj custom domain `szescstrun.pl` (+ opcjonalnie `www`).
 3. W Zenbox ustaw rekordy zgodnie z instrukcją hosta (A/AAAA lub CNAME).
 4. Włącz HTTPS u hosta.
-5. Ustaw `NEXT_PUBLIC_SERVER_URL=https://szescstrun.pl`.
+5. Ustaw `NEXT_PUBLIC_SERVER_URL=https://www.szescstrun.pl` (oraz opcjonalnie `SERVER_URL` na runtime).
 
 ## Pierwszy administrator
 

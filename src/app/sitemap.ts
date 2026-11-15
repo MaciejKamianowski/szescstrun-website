@@ -1,10 +1,16 @@
 import type { MetadataRoute } from 'next'
 
 import { getPayloadClient } from '@/lib/payload'
-import { getServerUrl } from '@/lib/utils'
+import { SITEMAP_STATIC_PATHS } from '@/lib/sitemap-routes'
+import { getServerUrl, isLocalhostUrl } from '@/lib/utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getServerUrl()
+
+  if (process.env.NODE_ENV === 'production' && isLocalhostUrl(base)) {
+    throw new Error('Refusing to emit production sitemap with localhost base URL')
+  }
+
   const payload = await getPayloadClient()
 
   const posts = await payload.find({
@@ -12,18 +18,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     where: { _status: { equals: 'published' } },
     limit: 1000,
     depth: 0,
+    // Enforce public access rules — drafts must never appear in the sitemap.
+    overrideAccess: false,
   })
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    '',
-    '/o-mnie',
-    '/oferta',
-    '/cennik',
-    '/aktualnosci',
-    '/nagrania',
-    '/kontakt',
-    '/polityka-prywatnosci',
-  ].map((path) => ({
+  const staticRoutes: MetadataRoute.Sitemap = SITEMAP_STATIC_PATHS.map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
     changeFrequency: path === '' || path === '/aktualnosci' ? 'weekly' : 'monthly',

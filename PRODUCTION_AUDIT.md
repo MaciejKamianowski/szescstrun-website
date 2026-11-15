@@ -116,7 +116,7 @@ Wykonane pomiary CDP + screenshoty (375, 768, 1440, 1920).
 | PROD-03 | Resend | **BLOCKED** | Critical | Integracja gotowa; wymaga Verified `mail.szescstrun.pl` + env na Railway. | `RESEND_API_KEY`, `CONTACT_EMAIL_TO`, `EMAIL_FROM` |
 | PROD-04 | Cache revalidation | **PASS** | High | `revalidatePath` + `revalidateTag(..., { expire: 0 })` po zmianach CMS. | — |
 | PROD-05 | Obsługa błędów | **PASS** | Medium | Formularz: czytelne 400/429/503; bez stacków po stronie klienta. | — |
-| PROD-06 | sitemap / robots | **PASS** | High | `/robots.txt` i `/sitemap.xml` → 200; Disallow `/admin`, `/api`. | Ustawić `NEXT_PUBLIC_SERVER_URL=https://szescstrun.pl` |
+| PROD-06 | sitemap / robots | **PASS** | High | `/robots.txt` i `/sitemap.xml` → 200; Disallow `/admin`, `/api`. | `NEXT_PUBLIC_SERVER_URL=https://www.szescstrun.pl` |
 | PROD-07 | SEO metadata / JSON-LD | **PASS** | Medium | Metadata API + Person/WebSite na home. | Uzupełnić dane lokalizacji tylko gdy prawdziwe |
 | PROD-08 | Backup / restore | **BLOCKED** | High | Opisane w `DEPLOYMENT.md`, nie przetestowane. | Snapshoty DB + R2 |
 | PROD-09 | HTTPS | **BLOCKED** | Critical | Zależy od hosta; lokalnie HTTP. | TLS u providera |
@@ -145,7 +145,7 @@ Wykonane pomiary CDP + screenshoty (375, 768, 1440, 1920).
 1. **Critical:** skonfigurować **Resend** (inaczej formularz kontaktowy nie wysyła).
 2. **Critical:** włączyć **S3/R2** dla mediów (trwałość uploadów).
 3. **Critical:** produkcyjny **PostgreSQL** + `pnpm payload migrate` na czystej bazie.
-4. **Critical:** **HTTPS** + `NEXT_PUBLIC_SERVER_URL=https://szescstrun.pl`.
+4. **Critical:** **HTTPS** + `NEXT_PUBLIC_SERVER_URL=https://www.szescstrun.pl`.
 5. **High:** Node runtime **≥ 22.23.5** (zgodnie z Payload).
 6. **High:** uzupełnić **politykę prywatności** i dane kontaktowe / cennik w CMS.
 7. **High (zalecane przed go-live):** E2E roli **editor**, upload mediów, dodanie YouTube, karnet package.
