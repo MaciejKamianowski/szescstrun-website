@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
+  // Required by Dockerfile runner stage (Next standalone output)
+  output: 'standalone',
   images: {
     localPatterns: [
       {
