@@ -5,11 +5,11 @@ import { VideosGrid } from '@/components/sections/videos-grid'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
 import { getActiveVideos, getSiteSettings } from '@/lib/queries'
-import { buildMetadata } from '@/lib/seo'
+import { SEO_DEFAULTS, buildMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Nagrania — Sześć Strun',
-  description: 'Filmy i nagrania z kanału YouTube Sześć Strun — Jacek Krakowski.',
+  title: SEO_DEFAULTS.recordings.title,
+  description: SEO_DEFAULTS.recordings.description,
   path: '/nagrania',
 })
 

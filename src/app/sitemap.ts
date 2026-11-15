@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next'
 
 import { getPayloadClient } from '@/lib/payload'
+import { getSiteSettings } from '@/lib/queries'
 import { SITEMAP_STATIC_PATHS } from '@/lib/sitemap-routes'
-import { getServerUrl, isLocalhostUrl } from '@/lib/utils'
+import { absoluteUrl, getServerUrl, isLocalhostUrl } from '@/lib/utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getServerUrl()
@@ -11,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     throw new Error('Refusing to emit production sitemap with localhost base URL')
   }
 
-  const payload = await getPayloadClient()
+  const [payload, settings] = await Promise.all([getPayloadClient(), getSiteSettings()])
 
   const posts = await payload.find({
     collection: 'posts',
@@ -22,19 +23,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     overrideAccess: false,
   })
 
-  const staticRoutes: MetadataRoute.Sitemap = SITEMAP_STATIC_PATHS.map((path) => ({
-    url: `${base}${path}`,
-    lastModified: new Date(),
-    changeFrequency: path === '' || path === '/aktualnosci' ? 'weekly' : 'monthly',
-    priority: path === '' ? 1 : 0.7,
-  }))
+  const settingsUpdatedAt = settings.updatedAt ? new Date(settings.updatedAt) : undefined
 
-  const postRoutes: MetadataRoute.Sitemap = posts.docs.map((post) => ({
-    url: `${base}/aktualnosci/${post.slug}`,
-    lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }))
+  const staticRoutes: MetadataRoute.Sitemap = SITEMAP_STATIC_PATHS.map((path) => {
+    const entry: MetadataRoute.Sitemap[number] = {
+      url: absoluteUrl(path || '/'),
+    }
+    // Prefer a real CMS timestamp; do not invent "now" for unchanged static pages.
+    if (settingsUpdatedAt) {
+      entry.lastModified = settingsUpdatedAt
+    }
+    return entry
+  })
 
-  return [...staticRoutes, ...postRoutes]
+  const postRoutes: MetadataRoute.Sitemap = posts.docs
+    .filter((post) => Boolean(post.slug))
+    .map((post) => {
+      const entry: MetadataRoute.Sitemap[number] = {
+        url: absoluteUrl(`/aktualnosci/${post.slug}`),
+      }
+      if (post.updatedAt) {
+        entry.lastModified = new Date(post.updatedAt)
+      } else if (post.publishedAt) {
+        entry.lastModified = new Date(post.publishedAt)
+      }
+      return entry
+    })
+
+  const urls = [...staticRoutes, ...postRoutes]
+  const seen = new Set<string>()
+  return urls.filter((entry) => {
+    if (seen.has(entry.url)) return false
+    seen.add(entry.url)
+    return true
+  })
 }

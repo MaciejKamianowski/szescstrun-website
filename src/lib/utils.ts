@@ -81,3 +81,14 @@ export function getServerUrl(): string {
 
   return configured || 'http://localhost:3000'
 }
+
+/**
+ * Absolute public URL for a site path.
+ * Homepage uses a trailing slash (`https://www.szescstrun.pl/`).
+ */
+export function absoluteUrl(path = '/'): string {
+  const base = getServerUrl()
+  if (!path || path === '/') return `${base}/`
+  const normalized = path.startsWith('/') ? path : `/${path}`
+  return `${base}${normalized}`
+}

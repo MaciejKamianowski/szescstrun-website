@@ -4,15 +4,13 @@ import { RichText } from '@/components/rich-text'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
 import { getPageBySlug } from '@/lib/queries'
-import { buildMetadata } from '@/lib/seo'
+import { SEO_DEFAULTS, buildMetadata, firstNonEmpty } from '@/lib/seo'
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug('polityka-prywatnosci')
   return buildMetadata({
-    title: page?.seoTitle || 'Polityka prywatności — Sześć Strun',
-    description:
-      page?.seoDescription ||
-      'Polityka prywatności serwisu szescstrun.pl. Treść do uzupełnienia przed uruchomieniem produkcyjnym.',
+    title: firstNonEmpty(page?.seoTitle, SEO_DEFAULTS.privacy.title),
+    description: firstNonEmpty(page?.seoDescription, SEO_DEFAULTS.privacy.description),
     path: '/polityka-prywatnosci',
   })
 }

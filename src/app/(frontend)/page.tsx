@@ -1,3 +1,5 @@
+import type { Metadata } from 'next'
+
 import { AboutPreview } from '@/components/sections/about-preview'
 import { ContactCta } from '@/components/sections/contact-cta'
 import { Hero } from '@/components/sections/hero'
@@ -8,6 +10,8 @@ import { TestimonialsSection } from '@/components/sections/testimonials'
 import { VideosGrid } from '@/components/sections/videos-grid'
 import { WhySection } from '@/components/sections/why-section'
 import { JsonLd } from '@/components/seo/json-ld'
+import { resolveSiteLogo } from '@/lib/branding'
+import { getMediaUrl } from '@/lib/media'
 import {
   getActiveLessonOffers,
   getActivePricingPlans,
@@ -16,7 +20,26 @@ import {
   getLatestPosts,
   getSiteSettings,
 } from '@/lib/queries'
-import { getServerUrl } from '@/lib/utils'
+import { SEO_DEFAULTS, buildMetadata, firstNonEmpty } from '@/lib/seo'
+import {
+  buildOrganizationJsonLd,
+  buildPersonJsonLd,
+  buildWebsiteJsonLd,
+} from '@/lib/structured-data'
+import type { Media } from '@/payload-types'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings()
+  const logo = resolveSiteLogo(settings)
+  const teacherPhoto = getMediaUrl(settings.teacherPhoto as Media | number | null | undefined)
+
+  return buildMetadata({
+    title: firstNonEmpty(settings.seoDefaultTitle, SEO_DEFAULTS.home.title),
+    description: firstNonEmpty(settings.seoDefaultDescription, SEO_DEFAULTS.home.description),
+    path: '/',
+    image: teacherPhoto || logo.src,
+  })
+}
 
 export default async function HomePage() {
   const [settings, offers, plans, videos, posts, testimonials] = await Promise.all([
@@ -32,22 +55,9 @@ export default async function HomePage() {
     <>
       <JsonLd
         data={[
-          {
-            '@context': 'https://schema.org',
-            '@type': 'WebSite',
-            name: settings.siteName || 'Sześć Strun',
-            url: getServerUrl(),
-            description: settings.siteDescription || undefined,
-            inLanguage: 'pl-PL',
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'Person',
-            name: settings.teacherName || 'Jacek Krakowski',
-            url: `${getServerUrl()}/o-mnie`,
-            jobTitle: 'Nauczyciel gry na gitarze akustycznej',
-            sameAs: [settings.facebookUrl, settings.youtubeUrl].filter(Boolean),
-          },
+          buildOrganizationJsonLd(settings),
+          buildWebsiteJsonLd(settings),
+          buildPersonJsonLd(settings),
         ]}
       />
       <Hero settings={settings} />

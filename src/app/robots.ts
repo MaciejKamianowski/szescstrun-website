@@ -10,8 +10,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/admin', '/api'],
+        allow: ['/', '/api/media/'],
+        // Keep CMS and private APIs out of the index; allow /api/media for rendered images.
+        disallow: ['/admin/', '/api/'],
       },
     ],
     sitemap: `${base}/sitemap.xml`,

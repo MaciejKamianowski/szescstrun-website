@@ -7,15 +7,16 @@ import { Reveal } from '@/components/ui/reveal'
 import { SectionHeading } from '@/components/ui/section-heading'
 import { JsonLd } from '@/components/seo/json-ld'
 import { getApprovedTestimonials, getSiteSettings } from '@/lib/queries'
-import { buildMetadata } from '@/lib/seo'
-import { getServerUrl } from '@/lib/utils'
+import { SEO_DEFAULTS, buildMetadata } from '@/lib/seo'
+import {
+  buildOrganizationJsonLd,
+  buildPersonJsonLd,
+} from '@/lib/structured-data'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings()
   return buildMetadata({
-    title: `O mnie — ${settings.teacherName || 'Jacek Krakowski'} | Sześć Strun`,
-    description:
-      'Poznaj Jacka Krakowskiego — nauczyciela gry na gitarze akustycznej marki Sześć Strun.',
+    title: SEO_DEFAULTS.about.title,
+    description: SEO_DEFAULTS.about.description,
     path: '/o-mnie',
   })
 }
@@ -28,20 +29,12 @@ export default async function AboutPage() {
 
   return (
     <>
-      <JsonLd
-        data={{
-          '@context': 'https://schema.org',
-          '@type': 'Person',
-          name: settings.teacherName || 'Jacek Krakowski',
-          url: `${getServerUrl()}/o-mnie`,
-          jobTitle: 'Nauczyciel gry na gitarze akustycznej',
-          sameAs: [settings.facebookUrl, settings.youtubeUrl].filter(Boolean),
-        }}
-      />
+      <JsonLd data={[buildOrganizationJsonLd(settings), buildPersonJsonLd(settings)]} />
       <section className="border-b border-border py-16 md:py-24">
         <Container className="max-w-3xl">
           <Reveal>
             <SectionHeading
+              as="h1"
               eyebrow="O mnie"
               title={settings.teacherName || 'Jacek Krakowski'}
               description="Nauczyciel gry na gitarze akustycznej. Szczegółową biografię możesz uzupełnić w ustawieniach CMS."

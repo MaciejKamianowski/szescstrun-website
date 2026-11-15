@@ -174,14 +174,14 @@ export const SiteSettings: GlobalConfig = {
               name: 'seoDefaultTitle',
               type: 'text',
               label: 'Domyślny tytuł SEO',
-              defaultValue: 'Sześć Strun — lekcje gitary akustycznej',
+              defaultValue: 'Sześć Strun – Lekcje gitary akustycznej | Jacek Krakowski',
             },
             {
               name: 'seoDefaultDescription',
               type: 'textarea',
               label: 'Domyślny opis SEO',
               defaultValue:
-                'Indywidualne lekcje gry na gitarze akustycznej z Jackiem Krakowskim. Sprawdź ofertę i umów lekcję.',
+                'Sześć Strun to indywidualne lekcje gitary akustycznej prowadzone przez Jacka Krakowskiego. Poznaj ofertę, rozwijaj umiejętności i umów lekcję.',
             },
           ],
         },

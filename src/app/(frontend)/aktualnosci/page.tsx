@@ -5,12 +5,12 @@ import { PostsGrid } from '@/components/sections/posts-grid'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
 import { getPublishedPosts } from '@/lib/queries'
-import { buildMetadata } from '@/lib/seo'
+import { SEO_DEFAULTS, buildMetadata } from '@/lib/seo'
 import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Aktualności — Sześć Strun',
-  description: 'Aktualności, ogłoszenia, warsztaty i wydarzenia Sześć Strun.',
+  title: SEO_DEFAULTS.news.title,
+  description: SEO_DEFAULTS.news.description,
   path: '/aktualnosci',
 })
 

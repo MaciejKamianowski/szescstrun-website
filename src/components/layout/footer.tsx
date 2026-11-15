@@ -13,6 +13,7 @@ const footerNav = [
   { href: '/aktualnosci', label: 'Aktualności' },
   { href: '/nagrania', label: 'Nagrania' },
   { href: '/kontakt', label: 'Kontakt' },
+  { href: '/polityka-prywatnosci', label: 'Polityka prywatności' },
 ]
 
 export function Footer({ settings }: { settings: SiteSetting }) {

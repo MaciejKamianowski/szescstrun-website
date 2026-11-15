@@ -6,13 +6,12 @@ import { buttonVariants } from '@/components/ui/button'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
 import { getActiveLessonOffers } from '@/lib/queries'
-import { buildMetadata } from '@/lib/seo'
+import { SEO_DEFAULTS, buildMetadata } from '@/lib/seo'
 import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Oferta lekcji — Sześć Strun',
-  description:
-    'Indywidualne lekcje gitary akustycznej: nauka od podstaw, rozwój techniki i praca nad repertuarem.',
+  title: SEO_DEFAULTS.offer.title,
+  description: SEO_DEFAULTS.offer.description,
   path: '/oferta',
 })
 

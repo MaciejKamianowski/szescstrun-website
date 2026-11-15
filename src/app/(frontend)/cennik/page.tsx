@@ -4,11 +4,11 @@ import { PricingGrid } from '@/components/sections/pricing-grid'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
 import { getActivePricingPlans } from '@/lib/queries'
-import { buildMetadata } from '@/lib/seo'
+import { SEO_DEFAULTS, buildMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Cennik — Sześć Strun',
-  description: 'Ceny pojedynczych lekcji i karnetów. Aktualna oferta zarządzana w CMS.',
+  title: SEO_DEFAULTS.pricing.title,
+  description: SEO_DEFAULTS.pricing.description,
   path: '/cennik',
 })
 

@@ -4,11 +4,11 @@ import { ContactForm } from '@/components/forms/contact-form'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
 import { getSiteSettings } from '@/lib/queries'
-import { buildMetadata } from '@/lib/seo'
+import { SEO_DEFAULTS, buildMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = buildMetadata({
-  title: 'Kontakt — Sześć Strun',
-  description: 'Skontaktuj się w sprawie indywidualnych lekcji gry na gitarze akustycznej.',
+  title: SEO_DEFAULTS.contact.title,
+  description: SEO_DEFAULTS.contact.description,
   path: '/kontakt',
 })
 

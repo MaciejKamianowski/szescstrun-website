@@ -12,25 +12,24 @@ import {
   resolveSiteLogo,
 } from '@/lib/branding'
 import { getSiteSettings } from '@/lib/queries'
-import { buildMetadata } from '@/lib/seo'
-import { getServerUrl } from '@/lib/utils'
+import { SEO_DEFAULTS, firstNonEmpty, getMetadataBase } from '@/lib/seo'
 
 import './styles.css'
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
   const favicon = resolveFaviconUrl(settings)
-  const logo = resolveSiteLogo(settings)
-  const base = buildMetadata({
-    title: settings.seoDefaultTitle,
-    description: settings.seoDefaultDescription,
-    path: '/',
-    image: logo.src,
-  })
 
   return {
-    ...base,
-    metadataBase: new URL(getServerUrl()),
+    metadataBase: getMetadataBase(),
+    title: {
+      default: firstNonEmpty(settings.seoDefaultTitle, SEO_DEFAULTS.home.title)!,
+      template: '%s',
+    },
+    description: firstNonEmpty(
+      settings.seoDefaultDescription,
+      SEO_DEFAULTS.home.description,
+    ),
     icons: {
       icon: [
         { url: '/icons/favicon-16.png', type: 'image/png', sizes: '16x16' },

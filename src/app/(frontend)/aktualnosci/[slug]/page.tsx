@@ -10,8 +10,11 @@ import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
 import { getMediaAlt, getMediaUrl } from '@/lib/media'
 import { getPostBySlug, getRelatedPosts, getSiteSettings } from '@/lib/queries'
-import { buildMetadata } from '@/lib/seo'
-import { getServerUrl } from '@/lib/utils'
+import { buildMetadata, firstNonEmpty } from '@/lib/seo'
+import {
+  buildBlogPostingJsonLd,
+  buildBreadcrumbJsonLd,
+} from '@/lib/structured-data'
 import type { Media } from '@/payload-types'
 
 type Params = Promise<{ slug: string }>
@@ -30,10 +33,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const image = getMediaUrl(post.featuredImage as Media | number | null | undefined)
 
   return buildMetadata({
-    title: post.seoTitle || `${post.title} — Sześć Strun`,
-    description: post.seoDescription || post.excerpt,
+    title: firstNonEmpty(post.seoTitle, `${post.title} — Sześć Strun`),
+    description: firstNonEmpty(post.seoDescription, post.excerpt),
     path: `/aktualnosci/${post.slug}`,
     image,
+    ogType: 'article',
   })
 }
 
@@ -51,44 +55,20 @@ export default async function PostPage({ params }: { params: Params }) {
     <>
       <JsonLd
         data={[
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BlogPosting',
-            headline: post.title,
+          buildBlogPostingJsonLd({
+            title: post.title,
             description: post.excerpt,
-            datePublished: post.publishedAt || undefined,
+            slug: post.slug,
+            datePublished: post.publishedAt,
             dateModified: post.updatedAt,
-            author: {
-              '@type': 'Person',
-              name: settings.teacherName || 'Jacek Krakowski',
-            },
-            image: imageUrl || undefined,
-            mainEntityOfPage: `${getServerUrl()}/aktualnosci/${post.slug}`,
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              {
-                '@type': 'ListItem',
-                position: 1,
-                name: 'Strona główna',
-                item: getServerUrl(),
-              },
-              {
-                '@type': 'ListItem',
-                position: 2,
-                name: 'Aktualności',
-                item: `${getServerUrl()}/aktualnosci`,
-              },
-              {
-                '@type': 'ListItem',
-                position: 3,
-                name: post.title,
-                item: `${getServerUrl()}/aktualnosci/${post.slug}`,
-              },
-            ],
-          },
+            imageUrl,
+            authorName: settings.teacherName || 'Jacek Krakowski',
+          }),
+          buildBreadcrumbJsonLd([
+            { name: 'Strona główna', path: '/' },
+            { name: 'Aktualności', path: '/aktualnosci' },
+            { name: post.title, path: `/aktualnosci/${post.slug}` },
+          ]),
         ]}
       />
 
