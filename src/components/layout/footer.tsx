@@ -1,0 +1,122 @@
+import Link from 'next/link'
+import { Facebook, Youtube } from 'lucide-react'
+
+import { Container } from '@/components/ui/container'
+import type { SiteSetting } from '@/payload-types'
+
+const footerNav = [
+  { href: '/o-mnie', label: 'O mnie' },
+  { href: '/oferta', label: 'Oferta' },
+  { href: '/cennik', label: 'Cennik' },
+  { href: '/aktualnosci', label: 'Aktualności' },
+  { href: '/nagrania', label: 'Nagrania' },
+  { href: '/kontakt', label: 'Kontakt' },
+]
+
+export function Footer({ settings }: { settings: SiteSetting }) {
+  const year = new Date().getFullYear()
+
+  return (
+    <footer className="border-t border-border bg-background-secondary">
+      <Container className="grid gap-10 py-14 md:grid-cols-[1.2fr_1fr_1fr]">
+        <div>
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-foreground">
+            {settings.siteName || 'Sześć Strun'}
+          </p>
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
+            {settings.siteDescription ||
+              'Indywidualne lekcje gry na gitarze akustycznej.'}
+          </p>
+          <div className="mt-6 flex gap-3">
+            {settings.facebookUrl ? (
+              <a
+                href={settings.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted transition-colors hover:border-accent hover:text-accent"
+                aria-label="Facebook"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+            ) : null}
+            {settings.youtubeUrl ? (
+              <a
+                href={settings.youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted transition-colors hover:border-accent hover:text-accent"
+                aria-label="YouTube"
+              >
+                <Youtube className="h-4 w-4" />
+              </a>
+            ) : null}
+          </div>
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">
+            Nawigacja
+          </p>
+          <ul className="mt-4 space-y-2">
+            {footerNav.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="text-sm text-muted transition-colors hover:text-accent"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground">
+            Kontakt
+          </p>
+          <ul className="mt-4 space-y-2 text-sm text-muted">
+            {settings.teacherName ? <li>{settings.teacherName}</li> : null}
+            {settings.contactEmail ? (
+              <li>
+                <a
+                  href={`mailto:${settings.contactEmail}`}
+                  className="transition-colors hover:text-accent"
+                >
+                  {settings.contactEmail}
+                </a>
+              </li>
+            ) : null}
+            {settings.contactPhone ? (
+              <li>
+                <a
+                  href={`tel:${settings.contactPhone.replace(/\s+/g, '')}`}
+                  className="transition-colors hover:text-accent"
+                >
+                  {settings.contactPhone}
+                </a>
+              </li>
+            ) : null}
+            {settings.locationCity ? <li>{settings.locationCity}</li> : null}
+            {!settings.contactEmail && !settings.contactPhone ? (
+              <li>
+                Dane kontaktowe uzupełnisz w panelu administracyjnym.
+              </li>
+            ) : null}
+          </ul>
+        </div>
+      </Container>
+
+      <div className="border-t border-border">
+        <Container className="flex flex-col gap-3 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year} {settings.siteName || 'Sześć Strun'}
+          </p>
+          <Link href="/polityka-prywatnosci" className="transition-colors hover:text-accent">
+            Polityka prywatności
+          </Link>
+        </Container>
+      </div>
+    </footer>
+  )
+}
