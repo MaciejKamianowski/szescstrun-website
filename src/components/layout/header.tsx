@@ -5,8 +5,10 @@ import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { SiteLogo } from '@/components/brand/site-logo'
 import { buttonVariants } from '@/components/ui/button'
 import { Container } from '@/components/ui/container'
+import type { BrandLogo } from '@/lib/branding'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -19,13 +21,15 @@ const navItems = [
   { href: '/kontakt', label: 'Kontakt' },
 ]
 
-export function Header({ ctaLabel = 'Umów lekcję' }: { ctaLabel?: string }) {
+export function Header({
+  ctaLabel = 'Umów lekcję',
+  logo,
+}: {
+  ctaLabel?: string
+  logo: BrandLogo
+}) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-
-  useEffect(() => {
-    setOpen(false)
-  }, [pathname])
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
@@ -34,15 +38,19 @@ export function Header({ ctaLabel = 'Umów lekcję' }: { ctaLabel?: string }) {
     }
   }, [open])
 
+  const closeMenu = () => setOpen(false)
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/90 backdrop-blur-md">
-      <Container className="flex h-16 items-center justify-between gap-4 md:h-20">
-        <Link
-          href="/"
-          className="text-sm font-bold uppercase tracking-[0.18em] text-foreground transition-colors hover:text-accent md:text-base"
-        >
-          Sześć Strun
-        </Link>
+      <Container className="flex h-[4.75rem] items-center justify-between gap-3 sm:gap-4 md:h-[6rem]">
+        <SiteLogo
+          logo={logo}
+          size="header"
+          priority
+          linked
+          onNavigate={closeMenu}
+          className="max-w-[min(58vw,240px)] md:max-w-[300px] lg:max-w-[340px]"
+        />
 
         <nav className="hidden items-center gap-6 lg:flex" aria-label="Główne menu">
           {navItems.map((item) => {
@@ -96,6 +104,7 @@ export function Header({ ctaLabel = 'Umów lekcję' }: { ctaLabel?: string }) {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={closeMenu}
                 className={cn(
                   'rounded-md px-3 py-3 text-sm uppercase tracking-wide transition-colors',
                   active ? 'bg-background-secondary text-accent' : 'text-muted hover:text-foreground',
@@ -105,7 +114,11 @@ export function Header({ ctaLabel = 'Umów lekcję' }: { ctaLabel?: string }) {
               </Link>
             )
           })}
-          <Link href="/kontakt" className={cn(buttonVariants(), 'mt-3 w-full')}>
+          <Link
+            href="/kontakt"
+            onClick={closeMenu}
+            className={cn(buttonVariants(), 'mt-3 w-full')}
+          >
             {ctaLabel}
           </Link>
         </Container>

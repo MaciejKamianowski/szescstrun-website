@@ -48,7 +48,10 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    // Dev: push schema. Production: run `pnpm payload migrate` explicitly before start
+    // (avoid auto prodMigrations — interactive prompts can hang `next build`).
     push: process.env.NODE_ENV !== 'production',
+    migrationDir: path.resolve(dirname, 'migrations'),
   }),
   sharp,
   plugins: [

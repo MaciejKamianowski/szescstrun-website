@@ -80,12 +80,12 @@ export function Hero({ settings }: { settings: SiteSetting }) {
 
   return (
     <section className="relative border-b border-border">
-      <Container className="grid items-center gap-10 py-12 lg:min-h-[calc(100vh-5rem)] lg:grid-cols-2 lg:gap-16 lg:py-20">
+      <Container className="grid items-center gap-10 py-10 md:py-14 lg:min-h-[calc(100vh-6rem)] lg:grid-cols-2 lg:gap-16 lg:py-16">
         <Reveal className="relative z-10 max-w-xl">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-accent">
             Lekcje gitary akustycznej
           </p>
-          <h1 className="text-4xl font-bold uppercase leading-[0.95] tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-7xl">
+          <h1 className="text-[2.1rem] font-bold uppercase leading-[0.95] tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-[4.25rem]">
             {lines.map((line) => (
               <span key={line} className="block">
                 {line}

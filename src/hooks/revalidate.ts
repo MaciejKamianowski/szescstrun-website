@@ -10,7 +10,8 @@ function runRevalidation(paths: string[], tags: string[]) {
     revalidatePath(path)
   }
   for (const tag of tags) {
-    revalidateTag(tag)
+    // Next.js 16: second arg required. expire:0 = immediate (CMS content updates).
+    revalidateTag(tag, { expire: 0 })
   }
 }
 

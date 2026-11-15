@@ -22,10 +22,21 @@ export const Media: CollectionConfig = {
     read: anyone,
     update: adminsAndEditors,
   },
+  hooks: {
+    beforeOperation: [
+      ({ operation, req }) => {
+        if ((operation === 'create' || operation === 'update') && req.file) {
+          const maxBytes = 5 * 1024 * 1024
+          if (req.file.size > maxBytes) {
+            throw new Error('Plik jest zbyt duży. Maksymalny rozmiar to 5 MB.')
+          }
+        }
+      },
+    ],
+  },
   upload: {
     staticDir: path.resolve(dirname, '../../media'),
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'],
-    // Limit ~5 MB; Next.js body size also constrains uploads.
     crop: true,
     focalPoint: true,
     imageSizes: [

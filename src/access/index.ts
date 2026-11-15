@@ -26,3 +26,25 @@ export const publishedOrAuthenticated: Access = ({ req: { user } }) => {
     },
   }
 }
+
+/** Publiczny odczyt tylko aktywnych rekordów; zalogowani widzą wszystkie. */
+export const activeOrAuthenticated: Access = ({ req: { user } }) => {
+  if (user) return true
+
+  return {
+    active: {
+      equals: true,
+    },
+  }
+}
+
+/** Publiczny odczyt tylko zatwierdzonych opinii; zalogowani widzą wszystkie. */
+export const approvedOrAuthenticated: Access = ({ req: { user } }) => {
+  if (user) return true
+
+  return {
+    approved: {
+      equals: true,
+    },
+  }
+}

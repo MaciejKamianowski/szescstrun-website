@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { Facebook, Youtube } from 'lucide-react'
 
+import { SiteLogo } from '@/components/brand/site-logo'
 import { Container } from '@/components/ui/container'
+import { resolveFooterLogo } from '@/lib/branding'
 import type { SiteSetting } from '@/payload-types'
 
 const footerNav = [
@@ -15,15 +17,14 @@ const footerNav = [
 
 export function Footer({ settings }: { settings: SiteSetting }) {
   const year = new Date().getFullYear()
+  const logo = resolveFooterLogo(settings)
 
   return (
     <footer className="border-t border-border bg-background-secondary">
       <Container className="grid gap-10 py-14 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.18em] text-foreground">
-            {settings.siteName || 'Sześć Strun'}
-          </p>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted">
+          <SiteLogo logo={logo} size="footer" linked className="max-w-[min(100%,320px)]" />
+          <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted">
             {settings.siteDescription ||
               'Indywidualne lekcje gry na gitarze akustycznej.'}
           </p>
@@ -99,9 +100,7 @@ export function Footer({ settings }: { settings: SiteSetting }) {
             ) : null}
             {settings.locationCity ? <li>{settings.locationCity}</li> : null}
             {!settings.contactEmail && !settings.contactPhone ? (
-              <li>
-                Dane kontaktowe uzupełnisz w panelu administracyjnym.
-              </li>
+              <li>Dane kontaktowe uzupełnisz w panelu administracyjnym.</li>
             ) : null}
           </ul>
         </div>

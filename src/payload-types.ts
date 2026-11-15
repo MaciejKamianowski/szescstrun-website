@@ -742,6 +742,18 @@ export interface SiteSetting {
   siteName: string;
   tagline?: string | null;
   siteDescription?: string | null;
+  /**
+   * Oficjalny logotyp. Jeśli puste — używane jest domyślne logo z public/images/szesc-strun-logo.jpeg.
+   */
+  siteLogo?: (number | null) | Media;
+  /**
+   * Osobny wariant do stopki. Jeśli puste — używane jest logo główne lub domyślne.
+   */
+  footerLogo?: (number | null) | Media;
+  /**
+   * Kwadratowa ikona (najlepiej symbol łuku ze strunami). Jeśli puste — domyślne pliki z public/icons.
+   */
+  favicon?: (number | null) | Media;
   teacherName: string;
   teacherBiography?: {
     root: {
@@ -786,6 +798,9 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   siteName?: T;
   tagline?: T;
   siteDescription?: T;
+  siteLogo?: T;
+  footerLogo?: T;
+  favicon?: T;
   teacherName?: T;
   teacherBiography?: T;
   teacherPhoto?: T;

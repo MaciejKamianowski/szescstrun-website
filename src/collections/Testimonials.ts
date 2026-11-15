@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { adminsAndEditors, anyone } from '@/access'
+import { adminsAndEditors, approvedOrAuthenticated } from '@/access'
 import { revalidateCollection, revalidateCollectionDelete } from '@/hooks/revalidate'
 
 export const Testimonials: CollectionConfig = {
@@ -18,7 +18,7 @@ export const Testimonials: CollectionConfig = {
   access: {
     create: adminsAndEditors,
     delete: adminsAndEditors,
-    read: anyone,
+    read: approvedOrAuthenticated,
     update: adminsAndEditors,
   },
   fields: [

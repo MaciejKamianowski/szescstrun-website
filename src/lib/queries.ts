@@ -17,6 +17,7 @@ export const getSiteSettings = cache(async (): Promise<SiteSetting> => {
   return payload.findGlobal({
     slug: 'site-settings',
     depth: 2,
+    overrideAccess: false,
   })
 })
 
@@ -28,6 +29,7 @@ export const getActiveLessonOffers = cache(async (): Promise<LessonOffer[]> => {
     sort: 'displayOrder',
     depth: 1,
     limit: 50,
+    overrideAccess: false,
   })
   return result.docs
 })
@@ -40,6 +42,7 @@ export const getActivePricingPlans = cache(async (): Promise<PricingPlan[]> => {
     sort: 'displayOrder',
     depth: 0,
     limit: 50,
+    overrideAccess: false,
   })
   return result.docs
 })
@@ -54,6 +57,7 @@ export const getFeaturedVideos = cache(async (limit = 3): Promise<Video[]> => {
     sort: 'displayOrder',
     depth: 1,
     limit,
+    overrideAccess: false,
   })
 
   if (featured.docs.length > 0) return featured.docs
@@ -64,6 +68,7 @@ export const getFeaturedVideos = cache(async (limit = 3): Promise<Video[]> => {
     sort: 'displayOrder',
     depth: 1,
     limit,
+    overrideAccess: false,
   })
   return fallback.docs
 })
@@ -76,6 +81,7 @@ export const getActiveVideos = cache(async (): Promise<Video[]> => {
     sort: 'displayOrder',
     depth: 1,
     limit: 100,
+    overrideAccess: false,
   })
   return result.docs
 })
@@ -88,6 +94,7 @@ export const getLatestPosts = cache(async (limit = 3): Promise<Post[]> => {
     sort: '-publishedAt',
     depth: 1,
     limit,
+    overrideAccess: false,
   })
   return result.docs
 })
@@ -115,6 +122,7 @@ export const getPublishedPosts = cache(
       depth: 1,
       page,
       limit,
+      overrideAccess: false,
     })
   },
 )
@@ -123,6 +131,8 @@ export const getPostBySlug = cache(async (slug: string): Promise<Post | null> =>
   const payload = await getPayloadClient()
   const { isEnabled } = await draftMode()
 
+  // Draft preview requires Next.js draftMode cookie AND must never bypass access
+  // without an authenticated Payload session. Public requests always see published only.
   const result = await payload.find({
     collection: 'posts',
     where: {
@@ -134,7 +144,7 @@ export const getPostBySlug = cache(async (slug: string): Promise<Post | null> =>
     depth: 2,
     limit: 1,
     draft: isEnabled,
-    overrideAccess: isEnabled,
+    overrideAccess: false,
   })
 
   return result.docs[0] ?? null
@@ -154,6 +164,7 @@ export const getRelatedPosts = cache(async (post: Post, limit = 3): Promise<Post
     sort: '-publishedAt',
     depth: 1,
     limit,
+    overrideAccess: false,
   })
   return result.docs
 })
@@ -166,6 +177,7 @@ export const getApprovedTestimonials = cache(async (): Promise<Testimonial[]> =>
     sort: 'displayOrder',
     depth: 0,
     limit: 20,
+    overrideAccess: false,
   })
   return result.docs
 })
@@ -177,6 +189,7 @@ export const getPageBySlug = cache(async (slug: string): Promise<Page | null> =>
     where: { slug: { equals: slug } },
     depth: 1,
     limit: 1,
+    overrideAccess: false,
   })
   return result.docs[0] ?? null
 })

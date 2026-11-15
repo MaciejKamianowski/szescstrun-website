@@ -51,20 +51,20 @@ S3_PUBLIC_URL=https://media.szescstrun.pl   # lub *.r2.dev
 
 ## Migracje
 
-Lokalnie (dev) Payload używa `push` schematu do Postgres.
+Lokalnie (dev) Payload używa `push` schematu do Postgres (`push: true` gdy `NODE_ENV !== 'production'`).
 
-Na produkcji ustaw `NODE_ENV=production` (wyłącza push) i użyj migracji:
-
-```bash
-pnpm payload migrate:create
-pnpm payload migrate
-```
-
-W CI / starcie kontenera:
+Na produkcji ustaw `NODE_ENV=production` (wyłącza push) i **przed startem** uruchom migracje ręcznie (nie są auto-odpalane przy `next build`, żeby uniknąć interaktywnych promptów):
 
 ```bash
-pnpm ci   # migrate + build
+pnpm payload migrate:create   # tylko gdy zmieniasz schemat
+pnpm payload migrate          # obowiązkowo przed deployem / startem
+pnpm build
+pnpm start
 ```
+
+Skrypt `pnpm ci` wykonuje `payload migrate && pnpm build`.
+
+Migracja początkowa: `src/migrations/20261115_123647_initial.ts`.
 
 ## Storage mediów
 

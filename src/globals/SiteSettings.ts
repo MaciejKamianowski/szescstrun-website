@@ -37,6 +37,35 @@ export const SiteSettings: GlobalConfig = {
               defaultValue:
                 'Indywidualne lekcje gry na gitarze akustycznej z Jackiem Krakowskim.',
             },
+            {
+              name: 'siteLogo',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Logo główne (header)',
+              admin: {
+                description:
+                  'Oficjalny logotyp. Jeśli puste — używane jest domyślne logo z public/images/szesc-strun-logo.jpeg.',
+              },
+            },
+            {
+              name: 'footerLogo',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Logo w stopce (opcjonalne)',
+              admin: {
+                description: 'Osobny wariant do stopki. Jeśli puste — używane jest logo główne lub domyślne.',
+              },
+            },
+            {
+              name: 'favicon',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Favicon / ikona witryny',
+              admin: {
+                description:
+                  'Kwadratowa ikona (najlepiej symbol łuku ze strunami). Jeśli puste — domyślne pliki z public/icons.',
+              },
+            },
           ],
         },
         {

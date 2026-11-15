@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { adminsAndEditors, anyone } from '@/access'
+import { activeOrAuthenticated, adminsAndEditors } from '@/access'
 import { revalidateCollection, revalidateCollectionDelete } from '@/hooks/revalidate'
 import { extractYouTubeVideoId, isValidYouTubeUrl } from '@/lib/youtube'
 
@@ -18,7 +18,7 @@ export const Videos: CollectionConfig = {
   access: {
     create: adminsAndEditors,
     delete: adminsAndEditors,
-    read: anyone,
+    read: activeOrAuthenticated,
     update: adminsAndEditors,
   },
   fields: [
