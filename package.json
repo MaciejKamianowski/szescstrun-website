@@ -21,6 +21,8 @@
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx src/scripts/seed-example.ts",
     "format": "prettier --write .",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
+    "migrate:status": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:status",
+    "migrate:prod": "sh ./scripts/run-migrations.sh",
     "ci": "pnpm build"
   },
   "dependencies": {

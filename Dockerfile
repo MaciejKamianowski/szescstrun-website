@@ -31,7 +31,6 @@ ARG PAYLOAD_SECRET=build-time-placeholder-not-for-production
 ARG NEXT_PUBLIC_SERVER_URL=http://localhost:3000
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV NEXT_PUBLIC_SERVER_URL=$NEXT_PUBLIC_SERVER_URL
-# Ensure no accidental build-time DB connection from host env leakage
 ENV DATABASE_URL=
 
 RUN corepack enable && corepack prepare pnpm@10.34.9 --activate \
@@ -47,22 +46,23 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN apk add --no-cache libc6-compat \
   && addgroup --system --gid 1001 nodejs \
-  && adduser --system --uid 1001 nextjs \
-  && corepack enable \
-  && corepack prepare pnpm@10.34.9 --activate
+  && adduser --system --uid 1001 nextjs
 
 # Next.js standalone server
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Payload CLI + migrations for Railway pre-deploy (private network available then).
-# Not used during `docker build`.
+# Payload migrate tooling for Railway Pre-deploy (private network only).
+# Uses `node ./node_modules/payload/bin.js migrate` — no Corepack/pnpm download at runtime.
 COPY --from=builder --chown=nextjs:nodejs /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
 COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts ./
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/run-migrations.sh ./scripts/run-migrations.sh
+
+RUN chmod +x ./scripts/run-migrations.sh
 
 USER nextjs
 

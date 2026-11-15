@@ -58,20 +58,45 @@ Na produkcji ustaw `NODE_ENV=production` (wyłącza push). Migracje **nie mogą*
 ### Railway (Docker)
 
 1. `DATABASE_URL` zostaje prywatne: `${{Postgres.DATABASE_URL}}` (bez publicznego proxy).
-2. Build obrazu (`Dockerfile`) uruchamia wyłącznie `pnpm build` — bez migracji i bez wymaganego Postgresa.
-3. Pre-Deploy Command (w `railway.toml`): `pnpm exec payload migrate` — ma dostęp do prywatnej sieci.
-4. Potem start: `node server.js` (standalone).
+2. Build obrazu (`Dockerfile`) uruchamia wyłącznie `pnpm build` — bez migracji i bez Postgresa.
+3. **Pre-Deploy Command** (ustaw w Railway albo przez `railway.toml`):
+
+```bash
+sh ./scripts/run-migrations.sh
+```
+
+   Równoważnie (to samo wywołanie wewnątrz skryptu):
+
+```bash
+node ./node_modules/payload/bin.js migrate
+```
+
+   - działa po zbudowaniu obrazu,
+   - ma dostęp do prywatnej sieci Railway,
+   - **nie** pobiera zależności z internetu (używa `node_modules` z obrazu),
+   - błąd migracji zatrzymuje deployment.
+
+4. Start aplikacji: `node server.js` (standalone).
+
+> Nie używaj `pnpm exec payload migrate` w Pre-deploy — Corepack może próbować pobrać pnpm z npm registry.
 
 ### Lokalnie / ręcznie
 
 ```bash
-pnpm payload migrate:create   # tylko gdy zmieniasz schemat
-pnpm migrate                  # albo: pnpm exec payload migrate
+pnpm payload migrate:create   # tylko gdy zmieniasz schemat (oficjalny generator)
+pnpm migrate                  # lokalnie
+# albo tak jak na Railway:
+pnpm migrate:prod
 pnpm build
 pnpm start
 ```
 
-Migracje: `src/migrations/*.ts`.
+Migracje w repo:
+
+- `src/migrations/20261115_123647_initial.ts` — pełny schemat (kolekcje + `site_settings`)
+- `src/migrations/20261115_125220_add_site_logos.ts` — pola logo w ustawieniach
+
+Bezpieczeństwo: nigdy `migrate:fresh` / `migrate:reset` / `migrate:refresh` na produkcji.
 
 ## Storage mediów
 

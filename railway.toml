@@ -3,9 +3,9 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-# Runs after a successful image build, with access to Railway private network
-# (Postgres via ${{Postgres.DATABASE_URL}} / *.railway.internal).
-# Do NOT run migrations during `docker build`.
-preDeployCommand = "pnpm exec payload migrate"
+# After image build, with Railway private network + DATABASE_URL available.
+# Do NOT use `pnpm exec …` here — Corepack may try to download pnpm from the internet.
+# Failure of this command must fail the deployment.
+preDeployCommand = "sh ./scripts/run-migrations.sh"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
