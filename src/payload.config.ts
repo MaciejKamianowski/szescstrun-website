@@ -63,6 +63,9 @@ export default buildConfig({
   plugins: [
     s3Storage({
       enabled: storage.enabled,
+      // Keep prefix/_objectKey in DB schema even when R2 is disabled locally,
+      // so migrations stay consistent across environments.
+      alwaysInsertFields: true,
       // When enabled, plugin disables local disk for Media (Railway ephemeral FS safe).
       disableLocalStorage: true,
       collections: {
@@ -72,11 +75,11 @@ export default buildConfig({
             buildPublicMediaUrl(storage, fileName, typeof prefix === 'string' ? prefix : 'media'),
         },
       },
-      bucket: storage.bucket,
+      bucket: storage.bucket || 'szescstrun-media',
       config: {
         credentials: {
-          accessKeyId: storage.accessKeyId,
-          secretAccessKey: storage.secretAccessKey,
+          accessKeyId: storage.accessKeyId || 'local-placeholder',
+          secretAccessKey: storage.secretAccessKey || 'local-placeholder',
         },
         region: storage.region,
         endpoint: storage.endpoint || undefined,

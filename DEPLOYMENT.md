@@ -106,6 +106,7 @@ Migracje w repo:
 
 - `src/migrations/20261115_123647_initial.ts` — pełny schemat (kolekcje + `site_settings`)
 - `src/migrations/20261115_125220_add_site_logos.ts` — pola logo w ustawieniach
+- `src/migrations/20261115_144144_add_media_r2_storage_fields.ts` — kolumny R2/S3 w `media` (`prefix`, `_objectkey`)
 
 Bezpieczeństwo: nigdy `migrate:fresh` / `migrate:reset` / `migrate:refresh` na produkcji.
 

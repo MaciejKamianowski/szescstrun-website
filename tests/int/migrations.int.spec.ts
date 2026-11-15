@@ -67,6 +67,19 @@ describe('Payload migrations', () => {
       expect(columns).toContain('footer_logo_id')
       expect(columns).toContain('favicon_id')
 
+      const mediaColumns = await psql(
+        testDbName,
+        `SELECT column_name FROM information_schema.columns WHERE table_name = 'media' AND column_name IN ('prefix','_objectkey') ORDER BY column_name;`,
+      )
+      expect(mediaColumns).toContain('prefix')
+      expect(mediaColumns).toContain('_objectkey')
+
+      // Preserve a probe row across idempotent remigrate
+      await psql(
+        testDbName,
+        `INSERT INTO media (alt, prefix) VALUES ('probe-keep', 'media') RETURNING id;`,
+      )
+
       const second = await execFileAsync('sh', ['./scripts/run-migrations.sh'], {
         cwd: root,
         env,
@@ -75,6 +88,10 @@ describe('Payload migrations', () => {
       const secondOut = `${second.stdout}${second.stderr}`
       expect(secondOut).toMatch(/Done\./)
       expect(secondOut).not.toMatch(/Migrating: 20261115_123647_initial/)
+      expect(secondOut).not.toMatch(/Migrating: 20261115_144144_add_media_r2_storage_fields/)
+
+      const probe = await psql(testDbName, `SELECT alt FROM media WHERE alt = 'probe-keep';`)
+      expect(probe).toContain('probe-keep')
     },
     180_000,
   )
