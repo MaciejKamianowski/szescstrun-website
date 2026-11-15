@@ -21,7 +21,7 @@ Przed startem produkcyjnym Jacek powinien uzupełnić w panelu `/admin`:
 
 ## Techniczne (z programistą / hostingiem)
 
-- [ ] Konto Resend + `RESEND_API_KEY`, `CONTACT_EMAIL_TO`, `EMAIL_FROM`
+- [ ] Resend: domena `mail.szescstrun.pl` = Verified, potem `RESEND_API_KEY`, `CONTACT_EMAIL_TO` (Jacek), `EMAIL_FROM="Sześć Strun <formularz@mail.szescstrun.pl>"`
 - [ ] Bucket Cloudflare R2 `szescstrun-media` + zmienne `R2_*`
 - [ ] `R2_PUBLIC_URL` (r2.dev lub CDN) — nie używać endpointu API
 - [ ] Hosting Node (Railway / Render / Fly) + managed Postgres

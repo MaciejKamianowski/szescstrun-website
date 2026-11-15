@@ -99,10 +99,10 @@ Role: `admin` (pełne uprawnienia), `editor` (treści).
 Wymaga zmiennych:
 
 - `RESEND_API_KEY`
-- `CONTACT_EMAIL_TO`
-- `EMAIL_FROM`
+- `CONTACT_EMAIL_TO` — skrzynka Jacka
+- `EMAIL_FROM` — np. `Sześć Strun <formularz@mail.szescstrun.pl>` (domena `mail.szescstrun.pl` musi być Verified w Resend)
 
-Bez nich API zwraca błąd konfiguracji (bez fałszywego sukcesu). Opcjonalnie Turnstile.
+Bez nich API zwraca generyczny błąd 503 (bez fałszywego sukcesu i bez ujawniania szczegółów konfiguracji). Rate limit formularza korzysta z Postgres (`DATABASE_URL`) na Railway. Opcjonalnie Turnstile.
 
 ## SEO
 

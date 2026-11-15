@@ -36,9 +36,10 @@ DATABASE_URL=postgresql://...
 PAYLOAD_SECRET=...                # unikalny, długi sekret
 NEXT_PUBLIC_SERVER_URL=https://szescstrun.pl
 
+# Resend — dopiero po statusie Verified dla domeny mail.szescstrun.pl
 RESEND_API_KEY=...
-CONTACT_EMAIL_TO=...              # skrzynka Jacka
-EMAIL_FROM="Sześć Strun <noreply@twoja-domena.pl>"
+CONTACT_EMAIL_TO=...              # skrzynka Jacka (odbiorca formularza)
+EMAIL_FROM="Sześć Strun <formularz@mail.szescstrun.pl>"
 
 # Cloudflare R2 — media (Payload @payloadcms/storage-s3)
 R2_BUCKET=szescstrun-media

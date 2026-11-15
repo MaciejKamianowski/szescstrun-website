@@ -78,8 +78,8 @@ W trakcie audytu naprawiono m.in.:
 | SEC-03 | Access: niezatwierdzone opinie | **PASS** (naprawione) | High | Wcześniej `read: anyone`. | `Testimonials.ts` | `approvedOrAuthenticated` |
 | SEC-04 | Local API `overrideAccess` | **PASS** (naprawione) | High | Zapytania frontendu omijały ACL. | `src/lib/queries.ts` | `overrideAccess: false` wszędzie publicznie |
 | SEC-05 | Draft preview `overrideAccess: true` | **PASS** (naprawione) | Critical | `getPostBySlug` mógłby ujawnić szkice przy samym draftMode. | `src/lib/queries.ts` ~122–149 | Usunięto bypass; preview wymaga właściwego auth flow (do dorobienia) |
-| SEC-06 | Formularz kontaktowy | **PASS** | High | Zod FE+BE, honeypot, rate limit, brak fałszywego sukcesu bez Resend (503). | `api/contact/route.ts`, `validations/contact.ts` | Curl: walidacja 400; brak Resend → 503 z komunikatem konfiguracji |
-| SEC-07 | Rate limiting | **PASS** z zastrzeżeniem | Medium | In-memory Map — OK single-node; **FAIL na wielu instancjach**. | `src/lib/rate-limit.ts` | Na prod: Redis / Upstash |
+| SEC-06 | Formularz kontaktowy | **PASS** | High | Zod FE+BE, honeypot, rate limit, brak fałszywego sukcesu bez Resend (503, generyczny komunikat). | `api/contact/route.ts`, `validations/contact.ts` | Curl: walidacja 400; brak Resend → 503 |
+| SEC-07 | Rate limiting | **PASS** | Medium | Postgres (`contact_rate_limits`) gdy `DATABASE_URL`; fallback in-memory. | `src/lib/rate-limit.ts` | — |
 | SEC-08 | Uploady | **PASS** | High | MIME whitelist + hook 5 MB + sharp. | `Media.ts` | S3 obowiązkowe na PaaS |
 | SEC-09 | Sekrety | **PASS** | Critical | `.env` w `.gitignore`; przykład bez realnych sekretów. | `.gitignore`, `.env.example` | Silny `PAYLOAD_SECRET` na prod |
 | SEC-10 | Brak publicznej rejestracji | **PASS** | Critical | `users.create: admins`; int test odrzuca create bez auth. | `Users.ts` | — |
@@ -113,7 +113,7 @@ Wykonane pomiary CDP + screenshoty (375, 768, 1440, 1920).
 | --- | --- | --- | --- | --- | --- |
 | PROD-01 | PostgreSQL managed | **BLOCKED** | Critical | Lokalnie Docker OK; prod DB nieprovisionowana. | Neon/Supabase/Railway Postgres |
 | PROD-02 | Trwałość mediów | **FAIL** | Critical | Bez `S3_*` pliki w `/media` (efemeryczne na PaaS). | Cloudflare R2 przed go-live |
-| PROD-03 | Resend | **FAIL** | Critical | API zwraca 503 bez kluczy — poprawne, ale kontakt nie działa. | Ustawić `RESEND_API_KEY`, `CONTACT_EMAIL_TO`, `EMAIL_FROM` |
+| PROD-03 | Resend | **BLOCKED** | Critical | Integracja gotowa; wymaga Verified `mail.szescstrun.pl` + env na Railway. | `RESEND_API_KEY`, `CONTACT_EMAIL_TO`, `EMAIL_FROM` |
 | PROD-04 | Cache revalidation | **PASS** | High | `revalidatePath` + `revalidateTag(..., { expire: 0 })` po zmianach CMS. | — |
 | PROD-05 | Obsługa błędów | **PASS** | Medium | Formularz: czytelne 400/429/503; bez stacków po stronie klienta. | — |
 | PROD-06 | sitemap / robots | **PASS** | High | `/robots.txt` i `/sitemap.xml` → 200; Disallow `/admin`, `/api`. | Ustawić `NEXT_PUBLIC_SERVER_URL=https://szescstrun.pl` |

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-import { sendContactEmail, verifyTurnstile } from '@/lib/email'
+import { CONTACT_SEND_ERROR, sendContactEmail, verifyTurnstile } from '@/lib/email'
 import { rateLimit } from '@/lib/rate-limit'
 import { contactFormSchema } from '@/validations/contact'
 
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       request.headers.get('x-real-ip') ||
       'unknown'
 
-    const limited = rateLimit(`contact:${ip}`, 5, 60_000)
+    const limited = await rateLimit(`contact:${ip}`, 5, 60_000)
     if (!limited.success) {
       return NextResponse.json(
         { error: 'Zbyt wiele prób. Spróbuj ponownie za chwilę.' },
@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       )
     }
 
+    // Honeypot: pretend success so bots do not adapt.
     if (parsed.data.website) {
       return NextResponse.json({ ok: true })
     }
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
     })
 
     if (!result.ok) {
-      return NextResponse.json({ error: result.error }, { status: 503 })
+      return NextResponse.json({ error: CONTACT_SEND_ERROR }, { status: 503 })
     }
 
     return NextResponse.json({ ok: true })

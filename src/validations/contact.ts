@@ -26,7 +26,8 @@ export const contactFormSchema = z.object({
   privacyAccepted: z.boolean().refine((value) => value === true, {
     message: 'Musisz potwierdzić zapoznanie się z polityką prywatności.',
   }),
-  website: z.string().max(0).optional().or(z.literal('')),
+  // Honeypot: bots fill this; non-empty values are accepted here and dropped in the API.
+  website: z.string().max(200).optional().or(z.literal('')),
   turnstileToken: z.string().optional(),
 })
 
