@@ -5,28 +5,37 @@ import { VideosGrid } from '@/components/sections/videos-grid'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
 import { getActiveVideos, getSiteSettings } from '@/lib/queries'
-import { SEO_DEFAULTS, buildMetadata } from '@/lib/seo'
+import { buildMetadata } from '@/lib/seo'
+import { resolveRecordingsCopy, type SiteContentSettings } from '@/lib/site-content'
 
-export const metadata: Metadata = buildMetadata({
-  title: SEO_DEFAULTS.recordings.title,
-  description: SEO_DEFAULTS.recordings.description,
-  path: '/nagrania',
-})
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings()
+  const recordings = resolveRecordingsCopy(settings as typeof settings & SiteContentSettings)
+
+  return buildMetadata({
+    title: `${recordings.pageTitle} | Sześć Strun`,
+    description: recordings.description,
+    path: '/nagrania',
+  })
+}
 
 export default async function VideosPage() {
   const [videos, settings] = await Promise.all([getActiveVideos(), getSiteSettings()])
+  const recordings = resolveRecordingsCopy(settings as typeof settings & SiteContentSettings)
 
   return (
     <>
       <section className="border-b border-border py-16 md:py-20">
         <Container>
           <Reveal>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">Nagrania</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">
+              {recordings.eyebrow}
+            </p>
             <h1 className="mt-4 max-w-3xl text-4xl font-bold uppercase tracking-tight text-foreground md:text-6xl">
-              Galeria filmów
+              {recordings.pageTitle}
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted md:text-lg">
-              Wybrane materiały wideo. Oficjalny kanał:{' '}
+              {recordings.pageIntro}{' '}
               {settings.youtubeUrl ? (
                 <Link
                   href={settings.youtubeUrl}
@@ -36,15 +45,12 @@ export default async function VideosPage() {
                 >
                   YouTube
                 </Link>
-              ) : (
-                'YouTube'
-              )}
-              .
+              ) : null}
             </p>
           </Reveal>
         </Container>
       </section>
-      <VideosGrid videos={videos} showLink={false} />
+      <VideosGrid videos={videos} showLink={false} emptyMessage={recordings.emptyMessage} />
     </>
   )
 }

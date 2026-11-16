@@ -1,11 +1,18 @@
 import type { GlobalConfig } from 'payload'
 
 import { adminsAndEditors, anyone } from '@/access'
-import { revalidateGlobal } from '@/hooks/revalidate'
+import { revalidateSiteSettings } from '@/hooks/revalidate'
+
+import { aboutFields, downloadsPageFields, footerFields, homepageFields, navigationFields } from './fields'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: 'Ustawienia strony',
+  admin: {
+    group: 'Ustawienia strony',
+    description:
+      'Teksty strony, menu i SEO. Po zmianach kliknij „Zapisz”. Pliki i wpisy są w sekcjach Treści oraz Pliki.',
+  },
   access: {
     read: anyone,
     update: adminsAndEditors,
@@ -15,81 +22,20 @@ export const SiteSettings: GlobalConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Ogólne',
-          fields: [
-            {
-              name: 'siteName',
-              type: 'text',
-              label: 'Nazwa strony',
-              required: true,
-              defaultValue: 'Sześć Strun',
-            },
-            {
-              name: 'tagline',
-              type: 'text',
-              label: 'Hasło',
-              defaultValue: 'Nieskończone możliwości.',
-            },
-            {
-              name: 'siteDescription',
-              type: 'textarea',
-              label: 'Opis strony',
-              defaultValue:
-                'Indywidualne lekcje gry na gitarze akustycznej z Jackiem Krakowskim.',
-            },
-            {
-              name: 'siteLogo',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Logo główne (header)',
-              admin: {
-                description:
-                  'Oficjalny logotyp. Jeśli puste — używane jest domyślne logo z public/images/szesc-strun-logo.jpeg.',
-              },
-            },
-            {
-              name: 'footerLogo',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Logo w stopce (opcjonalne)',
-              admin: {
-                description: 'Osobny wariant do stopki. Jeśli puste — używane jest logo główne lub domyślne.',
-              },
-            },
-            {
-              name: 'favicon',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Favicon / ikona witryny',
-              admin: {
-                description:
-                  'Kwadratowa ikona (najlepiej symbol łuku ze strunami). Jeśli puste — domyślne pliki z public/icons.',
-              },
-            },
-          ],
+          label: 'Strona główna',
+          fields: homepageFields(),
         },
         {
-          label: 'Nauczyciel',
-          fields: [
-            {
-              name: 'teacherName',
-              type: 'text',
-              label: 'Imię i nazwisko nauczyciela',
-              required: true,
-              defaultValue: 'Jacek Krakowski',
-            },
-            {
-              name: 'teacherBiography',
-              type: 'richText',
-              label: 'Biografia',
-            },
-            {
-              name: 'teacherPhoto',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Zdjęcie nauczyciela',
-            },
-          ],
+          label: 'O mnie',
+          fields: aboutFields(),
+        },
+        {
+          label: 'Nawigacja',
+          fields: navigationFields(),
+        },
+        {
+          label: 'Stopka',
+          fields: footerFields(),
         },
         {
           label: 'Kontakt',
@@ -144,26 +90,62 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         {
-          label: 'Hero',
+          label: 'Do pobrania',
+          fields: downloadsPageFields(),
+        },
+        {
+          label: 'Ogólne',
           fields: [
             {
-              name: 'heroHeading',
-              type: 'textarea',
-              label: 'Nagłówek hero',
-              defaultValue: 'SZEŚĆ STRUN.\nNIESKOŃCZONE MOŻLIWOŚCI.',
-            },
-            {
-              name: 'heroDescription',
-              type: 'textarea',
-              label: 'Opis hero',
-              defaultValue:
-                'Odkryj świat gitary akustycznej i rozwijaj swoje umiejętności podczas indywidualnych lekcji.',
-            },
-            {
-              name: 'heroCTA',
+              name: 'siteName',
               type: 'text',
-              label: 'Tekst głównego CTA',
-              defaultValue: 'Umów lekcję',
+              label: 'Nazwa strony',
+              required: true,
+              defaultValue: 'Sześć Strun',
+            },
+            {
+              name: 'tagline',
+              type: 'text',
+              label: 'Hasło',
+              defaultValue: 'Nieskończone możliwości.',
+            },
+            {
+              name: 'siteDescription',
+              type: 'textarea',
+              label: 'Opis strony',
+              defaultValue: 'Indywidualne lekcje gry na gitarze akustycznej z Jackiem Krakowskim.',
+              admin: {
+                description: 'Krótki opis używany także w stopce, jeśli zakładka Stopka nie ma własnego tekstu.',
+              },
+            },
+            {
+              name: 'siteLogo',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Logo główne (header)',
+              admin: {
+                description:
+                  'Oficjalny logotyp. Jeśli puste — używane jest domyślne logo z public/images/szesc-strun-logo.jpeg.',
+              },
+            },
+            {
+              name: 'footerLogo',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Logo w stopce (opcjonalne)',
+              admin: {
+                description: 'Osobny wariant do stopki. Jeśli puste — używane jest logo główne lub domyślne.',
+              },
+            },
+            {
+              name: 'favicon',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Favicon / ikona witryny',
+              admin: {
+                description:
+                  'Kwadratowa ikona (najlepiej symbol łuku ze strunami). Jeśli puste — domyślne pliki z public/icons.',
+              },
             },
           ],
         },
@@ -175,6 +157,9 @@ export const SiteSettings: GlobalConfig = {
               type: 'text',
               label: 'Domyślny tytuł SEO',
               defaultValue: 'Sześć Strun – Lekcje gitary akustycznej | Jacek Krakowski',
+              admin: {
+                description: 'Domyślny tytuł strony głównej. SEO podstron O mnie i Do pobrania ustawisz w ich zakładkach.',
+              },
             },
             {
               name: 'seoDefaultDescription',
@@ -189,6 +174,6 @@ export const SiteSettings: GlobalConfig = {
     },
   ],
   hooks: {
-    afterChange: [revalidateGlobal(['/', '/o-mnie', '/kontakt', '/oferta'], ['settings'])],
+    afterChange: [revalidateSiteSettings],
   },
 }

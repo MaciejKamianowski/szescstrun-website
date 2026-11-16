@@ -12,6 +12,7 @@ import {
   resolveSiteLogo,
 } from '@/lib/branding'
 import { getSiteSettings } from '@/lib/queries'
+import { resolveMenuCta, resolveNavigation, type SiteContentSettings } from '@/lib/site-content'
 import { SEO_DEFAULTS, firstNonEmpty, getMetadataBase } from '@/lib/seo'
 
 import './styles.css'
@@ -46,11 +47,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSiteSettings()
   const logo = resolveSiteLogo(settings)
+  const content = settings as typeof settings & SiteContentSettings
 
   return (
     <html lang="pl" className={GeistSans.variable}>
       <body className="flex min-h-screen flex-col">
-        <Header ctaLabel={settings.heroCTA || 'Umów lekcję'} logo={logo} />
+        <Header items={resolveNavigation(content.navigation)} cta={resolveMenuCta(content)} logo={logo} />
         <main className="flex-1">{children}</main>
         <Footer settings={settings} />
       </body>

@@ -32,14 +32,9 @@ export default async function PrivacyPage() {
             <RichText data={page.content} />
           ) : (
             <div className="space-y-4 text-base leading-relaxed text-muted">
+              <p>Treść polityki prywatności zostanie opublikowana wkrótce.</p>
               <p>
-                Treść polityki prywatności nie została jeszcze opublikowana. Przed uruchomieniem
-                produkcyjnym uzupełnij ją w panelu administracyjnym (kolekcja „Strony
-                informacyjne”, slug <code className="text-foreground">polityka-prywatnosci</code>).
-              </p>
-              <p>
-                Formularz kontaktowy wymaga potwierdzenia zapoznania się z tą polityką. Do czasu
-                publikacji pełnej treści strona pełni rolę miejsca na oficjalny dokument.
+                Formularz kontaktowy wymaga potwierdzenia zapoznania się z tą polityką.
               </p>
             </div>
           )}

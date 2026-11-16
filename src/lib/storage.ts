@@ -116,6 +116,7 @@ export function buildPublicMediaUrl(
   filename: string,
   prefix = 'media',
   serverUrl = getServerUrl(),
+  collection = 'media',
 ): string {
   const key = prefix ? `${prefix.replace(/\/$/, '')}/${filename}` : filename
 
@@ -124,9 +125,11 @@ export function buildPublicMediaUrl(
   }
 
   // Secure proxy: Payload serves the file using server-side credentials.
+  // Collection slug selects /api/media/file or /api/downloads/file.
   const server = serverUrl.replace(/\/$/, '')
-  if (!server) return `/api/media/file/${filename}`
-  return `${server}/api/media/file/${filename}`
+  const path = `/api/${collection}/file/${filename}`
+  if (!server) return path
+  return `${server}${path}`
 }
 
 export function getPublicMediaHostname(storage: ObjectStorageConfig): string | null {

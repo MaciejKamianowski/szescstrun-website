@@ -9,23 +9,53 @@ import { SiteLogo } from '@/components/brand/site-logo'
 import { buttonVariants } from '@/components/ui/button'
 import { Container } from '@/components/ui/container'
 import type { BrandLogo } from '@/lib/branding'
+import type { ResolvedLink } from '@/lib/site-content'
 import { cn } from '@/lib/utils'
 
-const navItems = [
-  { href: '/', label: 'Strona główna' },
-  { href: '/o-mnie', label: 'O mnie' },
-  { href: '/oferta', label: 'Oferta' },
-  { href: '/cennik', label: 'Cennik' },
-  { href: '/aktualnosci', label: 'Aktualności' },
-  { href: '/nagrania', label: 'Nagrania' },
-  { href: '/kontakt', label: 'Kontakt' },
-]
+function isCurrent(pathname: string, item: ResolvedLink): boolean {
+  if (item.external) return false
+  if (item.href === '/') return pathname === '/'
+  const path = item.href.split('?')[0] || item.href
+  return pathname === path || pathname.startsWith(`${path}/`)
+}
+
+function NavAnchor({
+  item,
+  className,
+  onNavigate,
+}: {
+  item: ResolvedLink
+  className: string
+  onNavigate?: () => void
+}) {
+  if (item.external) {
+    return (
+      <a
+        href={item.href}
+        className={className}
+        target={item.openInNewTab ? '_blank' : undefined}
+        rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
+        onClick={onNavigate}
+      >
+        {item.label}
+      </a>
+    )
+  }
+
+  return (
+    <Link href={item.href} className={className} onClick={onNavigate}>
+      {item.label}
+    </Link>
+  )
+}
 
 export function Header({
-  ctaLabel = 'Umów lekcję',
+  items,
+  cta,
   logo,
 }: {
-  ctaLabel?: string
+  items: ResolvedLink[]
+  cta: ResolvedLink | null
   logo: BrandLogo
 }) {
   const pathname = usePathname()
@@ -49,37 +79,32 @@ export function Header({
           priority
           linked
           onNavigate={closeMenu}
-          className="max-w-[min(58vw,240px)] md:max-w-[300px] lg:max-w-[340px]"
+          className="max-w-[min(52vw,200px)] shrink-0 md:max-w-[220px] xl:max-w-[260px]"
         />
 
-        <nav className="hidden items-center gap-6 lg:flex" aria-label="Główne menu">
-          {navItems.map((item) => {
-            const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'text-sm uppercase tracking-wide transition-colors',
-                  active ? 'text-accent' : 'text-muted hover:text-foreground',
-                )}
-              >
-                {item.label}
-              </Link>
-            )
-          })}
+        <nav className="hidden min-w-0 items-center gap-x-2.5 2xl:gap-x-5 xl:flex" aria-label="Główne menu">
+          {items.map((item) => (
+            <NavAnchor
+              key={item.id}
+              item={item}
+              className={cn(
+                'whitespace-nowrap text-[11px] uppercase tracking-[0.12em] transition-colors 2xl:text-sm 2xl:tracking-wide',
+                isCurrent(pathname, item) ? 'text-accent' : 'text-muted hover:text-foreground',
+              )}
+            />
+          ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/kontakt"
-            className={cn(buttonVariants({ size: 'sm' }), 'hidden sm:inline-flex')}
-          >
-            {ctaLabel}
-          </Link>
+        <div className="flex shrink-0 items-center gap-3">
+          {cta ? (
+            <NavAnchor
+              item={cta}
+              className={cn(buttonVariants({ size: 'sm' }), 'hidden xl:inline-flex')}
+            />
+          ) : null}
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-accent hover:text-accent lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-accent hover:text-accent xl:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? 'Zamknij menu' : 'Otwórz menu'}
@@ -93,34 +118,31 @@ export function Header({
       <div
         id="mobile-menu"
         className={cn(
-          'border-t border-border bg-background lg:hidden',
+          'border-t border-border bg-background xl:hidden',
           open ? 'block' : 'hidden',
         )}
       >
         <Container className="flex flex-col gap-1 py-4">
-          {navItems.map((item) => {
-            const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={closeMenu}
-                className={cn(
-                  'rounded-md px-3 py-3 text-sm uppercase tracking-wide transition-colors',
-                  active ? 'bg-background-secondary text-accent' : 'text-muted hover:text-foreground',
-                )}
-              >
-                {item.label}
-              </Link>
-            )
-          })}
-          <Link
-            href="/kontakt"
-            onClick={closeMenu}
-            className={cn(buttonVariants(), 'mt-3 w-full')}
-          >
-            {ctaLabel}
-          </Link>
+          {items.map((item) => (
+            <NavAnchor
+              key={item.id}
+              item={item}
+              onNavigate={closeMenu}
+              className={cn(
+                'rounded-md px-3 py-3 text-sm uppercase tracking-wide transition-colors',
+                isCurrent(pathname, item)
+                  ? 'bg-background-secondary text-accent'
+                  : 'text-muted hover:text-foreground',
+              )}
+            />
+          ))}
+          {cta ? (
+            <NavAnchor
+              item={cta}
+              onNavigate={closeMenu}
+              className={cn(buttonVariants(), 'mt-3 w-full')}
+            />
+          ) : null}
         </Container>
       </div>
     </header>

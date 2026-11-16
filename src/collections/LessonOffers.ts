@@ -13,7 +13,7 @@ export const LessonOffers: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'active', 'displayOrder'],
-    group: 'Oferta',
+    group: 'Treści',
   },
   access: {
     create: adminsAndEditors,

@@ -14,6 +14,8 @@ export const Videos: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'featured', 'active', 'displayOrder'],
     group: 'Treści',
+    description:
+      'Każde nagranie to film z YouTube. Na stronie pojawiają się tylko pozycje z zaznaczonym „Aktywne”.',
   },
   access: {
     create: adminsAndEditors,
@@ -38,6 +40,9 @@ export const Videos: CollectionConfig = {
       type: 'text',
       label: 'Adres YouTube',
       required: true,
+      admin: {
+        description: 'Adres URL — wklej link do filmu z YouTube, np. https://www.youtube.com/watch?v=…',
+      },
       validate: (value: string | null | undefined) => {
         if (typeof value !== 'string' || !isValidYouTubeUrl(value)) {
           return 'Podaj prawidłowy adres filmu YouTube.'
@@ -98,6 +103,7 @@ export const Videos: CollectionConfig = {
       defaultValue: true,
       admin: {
         position: 'sidebar',
+        description: 'Aktywna — określa, czy element jest widoczny na stronie.',
       },
     },
     {

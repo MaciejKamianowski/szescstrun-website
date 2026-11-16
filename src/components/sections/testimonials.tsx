@@ -13,7 +13,7 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
           <SectionHeading
             eyebrow="Opinie"
             title="Głosy uczniów"
-            description="Wyłącznie zatwierdzone opinie z panelu administracyjnego."
+            description="Opinie osób, które uczą się gry na gitarze."
             className="mb-12"
           />
         </Reveal>

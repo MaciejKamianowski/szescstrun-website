@@ -7,10 +7,13 @@ test.describe('Frontend publiczny', () => {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   })
 
-  test('nawigacja do cennika i aktualności', async ({ page }) => {
+  test('nawigacja do oferty i aktualności, a cennik zostaje pod własnym adresem', async ({ page }) => {
     await page.goto('/')
-    await page.getByRole('navigation', { name: 'Główne menu' }).getByRole('link', { name: 'Cennik' }).click()
-    await expect(page).toHaveURL(/\/cennik/)
+    await expect(page.getByRole('navigation', { name: 'Główne menu' }).getByRole('link', { name: 'Cennik' })).toHaveCount(0)
+    await page.getByRole('navigation', { name: 'Główne menu' }).getByRole('link', { name: 'Oferta' }).click()
+    await expect(page).toHaveURL(/\/oferta/)
+
+    await page.goto('/cennik')
     await expect(page.getByRole('heading', { level: 1, name: /Lekcje i karnety/i })).toBeVisible()
 
     await page.getByRole('navigation', { name: 'Główne menu' }).getByRole('link', { name: 'Aktualności' }).click()

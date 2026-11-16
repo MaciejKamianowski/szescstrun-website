@@ -124,9 +124,7 @@ export function Hero({ settings }: { settings: SiteSetting }) {
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-accent">Zdjęcie nauczyciela</p>
                 <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted">
-                  Umieść plik w{' '}
-                  <code className="text-foreground">public/images/jacek-krakowski.jpg</code> albo
-                  dodaj zdjęcie w ustawieniach CMS.
+                  Zdjęcie pojawi się tutaj wkrótce.
                 </p>
               </div>
             </div>

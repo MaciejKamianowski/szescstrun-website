@@ -127,4 +127,51 @@ describe('CMS — dostęp i treści', () => {
       context: { disableRevalidate: true },
     })
   })
+
+  it('pozwala administratorowi zmienić menu i odmawia gościowi', async () => {
+    const { payload, user } = await seedTestUser()
+    const before = await payload.findGlobal({
+      slug: 'site-settings',
+      depth: 0,
+      overrideAccess: true,
+    })
+
+    await expect(
+      payload.updateGlobal({
+        slug: 'site-settings',
+        data: {
+          navigation: [
+            { label: 'Niedozwolone', linkType: 'internal', internalPath: '/kontakt', active: true },
+          ],
+        },
+        overrideAccess: false,
+        context: { disableRevalidate: true },
+      }),
+    ).rejects.toThrow()
+
+    const updated = await payload.updateGlobal({
+      slug: 'site-settings',
+      data: {
+        navigation: [
+          { label: 'Kontakt test', linkType: 'internal', internalPath: '/kontakt', active: true },
+          { label: 'Ukryte', linkType: 'internal', internalPath: '/cennik', active: false },
+        ],
+      },
+      user,
+      overrideAccess: false,
+      context: { disableRevalidate: true },
+    })
+
+    expect(updated.navigation?.map((item) => item.label)).toEqual(['Kontakt test', 'Ukryte'])
+    expect(updated.navigation?.find((item) => item.label === 'Ukryte')?.active).toBe(false)
+
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      data: {
+        navigation: before.navigation ?? [],
+      },
+      overrideAccess: true,
+      context: { disableRevalidate: true },
+    })
+  })
 })

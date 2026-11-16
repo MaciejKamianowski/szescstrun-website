@@ -61,3 +61,21 @@ export const revalidateGlobal =
 
     return doc
   }
+
+/** Settings affect the shared header and footer, so refresh the whole layout. */
+export const revalidateSiteSettings: GlobalAfterChangeHook = (args) => {
+  const doc = revalidateGlobal(
+    ['/', '/o-mnie', '/kontakt', '/oferta', '/nagrania', '/do-pobrania', '/cennik'],
+    ['settings'],
+  )(args)
+
+  if (args.req.context?.disableRevalidate) return doc
+
+  try {
+    revalidatePath('/', 'layout')
+  } catch (error) {
+    args.req.payload.logger.error({ err: error, msg: 'Błąd rewalidacji układu strony' })
+  }
+
+  return doc
+}

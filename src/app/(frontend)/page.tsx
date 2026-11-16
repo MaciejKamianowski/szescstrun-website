@@ -20,13 +20,14 @@ import {
   getLatestPosts,
   getSiteSettings,
 } from '@/lib/queries'
-import { SEO_DEFAULTS, buildMetadata, firstNonEmpty } from '@/lib/seo'
+import { resolveAboutPreview, resolveRecordingsCopy, resolveWhySection, shouldShowHomeRecordings, type SiteContentSettings } from '@/lib/site-content'
 import {
   buildOrganizationJsonLd,
   buildPersonJsonLd,
   buildWebsiteJsonLd,
 } from '@/lib/structured-data'
 import type { Media } from '@/payload-types'
+import { SEO_DEFAULTS, buildMetadata, firstNonEmpty } from '@/lib/seo'
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
@@ -51,6 +52,11 @@ export default async function HomePage() {
     getApprovedTestimonials(),
   ])
 
+  const content = settings as typeof settings & SiteContentSettings
+  const about = resolveAboutPreview(content)
+  const why = resolveWhySection(content)
+  const recordings = resolveRecordingsCopy(content)
+
   return (
     <>
       <JsonLd
@@ -61,11 +67,22 @@ export default async function HomePage() {
         ]}
       />
       <Hero settings={settings} />
-      <AboutPreview settings={settings} />
+      {about ? <AboutPreview content={about} /> : null}
       <OffersGrid offers={offers} />
-      <WhySection />
+      {why ? <WhySection content={why} /> : null}
       <PricingGrid plans={plans} />
-      <VideosGrid videos={videos} />
+      {shouldShowHomeRecordings(recordings, videos.length > 0) ? (
+        <VideosGrid
+          videos={videos}
+          eyebrow={recordings.eyebrow}
+          title={recordings.title}
+          description={recordings.description}
+          buttonLabel={recordings.buttonLabel}
+          buttonHref={recordings.buttonHref}
+          buttonExternal={recordings.buttonExternal}
+          emptyMessage={recordings.emptyMessage}
+        />
+      ) : null}
       <PostsGrid posts={posts} />
       <TestimonialsSection testimonials={testimonials} />
       <ContactCta />

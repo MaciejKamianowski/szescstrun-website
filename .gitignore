@@ -43,6 +43,7 @@ next-env.d.ts
 .env.*.local
 
 /media
+/downloads
 /test-results/
 /playwright-report/
 /blob-report/

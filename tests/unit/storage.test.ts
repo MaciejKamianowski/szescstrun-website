@@ -72,5 +72,8 @@ describe('resolveObjectStorageConfig', () => {
     expect(buildPublicMediaUrl(config, 'hero.webp')).toBe(
       'https://media.example.com/media/hero.webp',
     )
+    expect(
+      buildPublicMediaUrl(config, 'cwiczenia.pdf', 'downloads', 'https://szescstrun.pl', 'downloads'),
+    ).toBe('https://media.example.com/downloads/cwiczenia.pdf')
   })
 })

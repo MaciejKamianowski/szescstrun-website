@@ -3,6 +3,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 import { adminsAndEditors, anyone } from '@/access'
+import { IMAGE_FORMAT_LABEL, IMAGE_MIME_TYPES, IMAGE_SIZE_LABEL, validateImageUpload } from '@/lib/uploads'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -14,7 +15,8 @@ export const Media: CollectionConfig = {
     plural: 'Media',
   },
   admin: {
-    group: 'Treści',
+    group: 'Pliki',
+    description: `Zdjęcia do strony. Dozwolone formaty: ${IMAGE_FORMAT_LABEL}. Maksymalny rozmiar: ${IMAGE_SIZE_LABEL}. Po przesłaniu uzupełnij tekst alternatywny i kliknij Zapisz. Zdjęć HEIC z iPhone’a użyj dopiero po zapisaniu ich jako JPG.`,
   },
   access: {
     create: adminsAndEditors,
@@ -26,17 +28,19 @@ export const Media: CollectionConfig = {
     beforeOperation: [
       ({ operation, req }) => {
         if ((operation === 'create' || operation === 'update') && req.file) {
-          const maxBytes = 5 * 1024 * 1024
-          if (req.file.size > maxBytes) {
-            throw new Error('Plik jest zbyt duży. Maksymalny rozmiar to 5 MB.')
-          }
+          const message = validateImageUpload({
+            mimetype: req.file.mimetype,
+            size: req.file.size,
+            name: req.file.name,
+          })
+          if (message) throw new Error(message)
         }
       },
     ],
   },
   upload: {
     staticDir: path.resolve(dirname, '../../media'),
-    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'],
+    mimeTypes: [...IMAGE_MIME_TYPES],
     crop: true,
     focalPoint: true,
     imageSizes: [
@@ -74,7 +78,7 @@ export const Media: CollectionConfig = {
       label: 'Tekst alternatywny',
       required: true,
       admin: {
-        description: 'Opis obrazu dla dostępności i SEO.',
+        description: `Opis obrazu dla osób, które go nie widzą, i dla wyszukiwarek. Dozwolone formaty: ${IMAGE_FORMAT_LABEL}. Maksymalny rozmiar: ${IMAGE_SIZE_LABEL}.`,
       },
     },
   ],

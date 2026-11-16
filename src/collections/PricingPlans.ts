@@ -13,7 +13,7 @@ export const PricingPlans: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'type', 'priceAmount', 'active', 'displayOrder'],
-    group: 'Oferta',
+    group: 'Treści',
   },
   access: {
     create: adminsAndEditors,

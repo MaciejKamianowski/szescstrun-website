@@ -32,7 +32,7 @@ export function OffersGrid({
               <SectionHeading
                 eyebrow="Oferta"
                 title="Lekcje dopasowane do Ciebie"
-                description="Każdy rodzaj zajęć można edytować w panelu administracyjnym."
+                description="Indywidualne zajęcia dopasowane do Twojego poziomu i celu."
               />
               <Link href="/oferta" className="text-sm uppercase tracking-wide text-accent hover:underline">
                 Pełna oferta
@@ -43,7 +43,7 @@ export function OffersGrid({
 
         {offers.length === 0 ? (
           <p className="text-muted">
-            Oferta zajęć pojawi się tutaj po dodaniu aktywnych pozycji w CMS.
+            Szczegóły oferty pojawią się tutaj wkrótce.
           </p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">

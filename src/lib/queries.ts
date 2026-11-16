@@ -169,6 +169,19 @@ export const getRelatedPosts = cache(async (post: Post, limit = 3): Promise<Post
   return result.docs
 })
 
+export const getActiveDownloads = cache(async () => {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'downloads',
+    where: { active: { equals: true } },
+    sort: 'displayOrder',
+    depth: 0,
+    limit: 100,
+    overrideAccess: false,
+  })
+  return result.docs
+})
+
 export const getApprovedTestimonials = cache(async (): Promise<Testimonial[]> => {
   const payload = await getPayloadClient()
   const result = await payload.find({

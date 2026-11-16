@@ -64,17 +64,16 @@ export default async function ContactPage() {
                 <dd className="mt-1 text-foreground">{settings.locationCity}</dd>
               </div>
             ) : null}
-            <div>
-              <dt className="uppercase tracking-wide text-muted">Forma zajęć</dt>
-              <dd className="mt-1 text-foreground">
-                {[
-                  settings.lessonsOnline ? 'online' : null,
-                  settings.lessonsInPerson ? 'stacjonarnie' : null,
-                ]
-                  .filter(Boolean)
-                  .join(' / ') || 'Do uzupełnienia w CMS'}
-              </dd>
-            </div>
+            {settings.lessonsOnline || settings.lessonsInPerson ? (
+              <div>
+                <dt className="uppercase tracking-wide text-muted">Forma zajęć</dt>
+                <dd className="mt-1 text-foreground">
+                  {[settings.lessonsOnline ? 'online' : null, settings.lessonsInPerson ? 'stacjonarnie' : null]
+                    .filter(Boolean)
+                    .join(' / ')}
+                </dd>
+              </div>
+            ) : null}
           </dl>
         </Reveal>
 

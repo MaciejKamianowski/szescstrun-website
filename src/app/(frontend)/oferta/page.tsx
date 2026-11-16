@@ -29,7 +29,7 @@ export default async function OfferPage() {
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted md:text-lg">
               Sprawdź rodzaje zajęć i wybierz kierunek, który najbardziej Ci odpowiada. Szczegóły
-              oferty są edytowalne w panelu CMS.
+              oferty są dopasowane do poziomu i celu nauki.
             </p>
           </Reveal>
         </Container>

@@ -68,32 +68,48 @@ function VideoCard({ video }: { video: Video }) {
 export function VideosGrid({
   videos,
   showLink = true,
+  eyebrow = 'Nagrania',
+  title = 'Posłuchaj i zobacz',
+  description = 'Filmy z oficjalnego kanału YouTube.',
+  buttonLabel = 'Wszystkie nagrania',
+  buttonHref = '/nagrania',
+  buttonExternal = false,
+  emptyMessage = 'Pierwsze nagrania już wkrótce.',
 }: {
   videos: Video[]
   showLink?: boolean
+  eyebrow?: string
+  title?: string
+  description?: string
+  buttonLabel?: string
+  buttonHref?: string
+  buttonExternal?: boolean
+  emptyMessage?: string
 }) {
+  const buttonClass = 'text-sm uppercase tracking-wide text-accent hover:underline'
+
   return (
     <section className="border-b border-border py-20 md:py-28">
       <Container>
         {showLink ? (
           <Reveal>
             <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-              <SectionHeading
-                eyebrow="Nagrania"
-                title="Posłuchaj i zobacz"
-                description="Filmy z oficjalnego kanału YouTube. Wyświetlane są wyłącznie nagrania dodane w CMS."
-              />
-              <Link href="/nagrania" className="text-sm uppercase tracking-wide text-accent hover:underline">
-                Wszystkie nagrania
-              </Link>
+              <SectionHeading eyebrow={eyebrow} title={title} description={description} />
+              {buttonExternal ? (
+                <a href={buttonHref} className={buttonClass} target="_blank" rel="noopener noreferrer">
+                  {buttonLabel}
+                </a>
+              ) : (
+                <Link href={buttonHref} className={buttonClass}>
+                  {buttonLabel}
+                </Link>
+              )}
             </div>
           </Reveal>
         ) : null}
 
         {videos.length === 0 ? (
-          <p className="text-muted">
-            Nagrania pojawią się tutaj po dodaniu aktywnych filmów YouTube w panelu administracyjnym.
-          </p>
+          <p className="text-muted">{emptyMessage}</p>
         ) : (
           <div className="grid gap-6 lg:grid-cols-3">
             {videos.map((video, index) => (

@@ -15,8 +15,11 @@ import { LessonOffers } from './collections/LessonOffers'
 import { Videos } from './collections/Videos'
 import { Testimonials } from './collections/Testimonials'
 import { Pages } from './collections/Pages'
+import { Downloads } from './collections/Downloads'
 import { SiteSettings } from './globals/SiteSettings'
 import { buildPublicMediaUrl, resolveObjectStorageConfig } from './lib/storage'
+import { getServerUrl } from './lib/utils'
+import { MAX_DOWNLOAD_BYTES } from './lib/uploads'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -43,7 +46,7 @@ export default buildConfig({
     supportedLanguages: { pl },
     fallbackLanguage: 'pl',
   },
-  collections: [Users, Media, Posts, PricingPlans, LessonOffers, Videos, Testimonials, Pages],
+  collections: [Users, Media, Posts, Videos, Testimonials, LessonOffers, PricingPlans, Downloads, Pages],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -60,6 +63,14 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, 'migrations'),
   }),
   sharp,
+  upload: {
+    abortOnLimit: true,
+    responseOnLimit:
+      'Plik jest zbyt duży. Zdjęcia mogą mieć do 12 MB, a materiały do pobrania do 25 MB.',
+    limits: {
+      fileSize: MAX_DOWNLOAD_BYTES,
+    },
+  },
   plugins: [
     s3Storage({
       enabled: storage.enabled,
@@ -73,6 +84,17 @@ export default buildConfig({
           prefix: 'media',
           generateFileURL: ({ filename: fileName, prefix }) =>
             buildPublicMediaUrl(storage, fileName, typeof prefix === 'string' ? prefix : 'media'),
+        },
+        downloads: {
+          prefix: 'downloads',
+          generateFileURL: ({ filename: fileName, prefix }) =>
+            buildPublicMediaUrl(
+              storage,
+              fileName,
+              typeof prefix === 'string' ? prefix : 'downloads',
+              getServerUrl(),
+              'downloads',
+            ),
         },
       },
       bucket: storage.bucket || 'szescstrun-media',

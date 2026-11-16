@@ -42,6 +42,11 @@ export const SEO_DEFAULTS = {
     title: 'Polityka prywatności | Sześć Strun',
     description: 'Polityka prywatności serwisu Sześć Strun (szescstrun.pl).',
   },
+  downloads: {
+    title: 'Materiały do pobrania | Sześć Strun',
+    description:
+      'Materiały do pobrania przygotowane przez Sześć Strun — lekcje gitary akustycznej Jacka Krakowskiego.',
+  },
 } as const
 
 export function firstNonEmpty(

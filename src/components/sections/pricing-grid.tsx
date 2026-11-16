@@ -25,7 +25,7 @@ export function PricingGrid({
               <SectionHeading
                 eyebrow="Cennik"
                 title="Lekcje i karnety"
-                description="Aktualne ceny i pakiety zarządzane są w CMS. Zakup odbywa się poprzez kontakt z nauczycielem."
+                description="Aktualne ceny i pakiety. Zapis na zajęcia odbywa się przez kontakt z nauczycielem."
               />
               <Link href="/cennik" className="text-sm uppercase tracking-wide text-accent hover:underline">
                 Pełny cennik
@@ -36,7 +36,7 @@ export function PricingGrid({
 
         {plans.length === 0 ? (
           <p className="text-muted">
-            Cennik pojawi się tutaj po dodaniu aktywnych ofert cenowych w panelu administracyjnym.
+            Cennik pojawi się tutaj wkrótce.
           </p>
         ) : (
           <div className="grid gap-6 lg:grid-cols-3">

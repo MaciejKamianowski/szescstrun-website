@@ -41,6 +41,11 @@ const PUBLIC_ROUTES = [
     description: SEO_DEFAULTS.recordings.description,
   },
   {
+    path: '/do-pobrania',
+    title: SEO_DEFAULTS.downloads.title,
+    description: SEO_DEFAULTS.downloads.description,
+  },
+  {
     path: '/kontakt',
     title: SEO_DEFAULTS.contact.title,
     description: SEO_DEFAULTS.contact.description,
@@ -111,7 +116,7 @@ describe('getServerUrl / production SEO base', () => {
 
     const locs = SITEMAP_STATIC_PATHS.map((path) => absoluteUrl(path || '/'))
 
-    expect(locs.length).toBe(8)
+    expect(locs.length).toBe(9)
     expect(locs[0]).toBe('https://www.szescstrun.pl/')
     for (const loc of locs) {
       expect(loc.startsWith('https://www.szescstrun.pl')).toBe(true)

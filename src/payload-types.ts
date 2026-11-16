@@ -70,10 +70,11 @@ export interface Config {
     users: User;
     media: Media;
     posts: Post;
-    'pricing-plans': PricingPlan;
-    'lesson-offers': LessonOffer;
     videos: Video;
     testimonials: Testimonial;
+    'lesson-offers': LessonOffer;
+    'pricing-plans': PricingPlan;
+    downloads: Download;
     pages: Page;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -85,10 +86,11 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
-    'pricing-plans': PricingPlansSelect<false> | PricingPlansSelect<true>;
-    'lesson-offers': LessonOffersSelect<false> | LessonOffersSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    'lesson-offers': LessonOffersSelect<false> | LessonOffersSelect<true>;
+    'pricing-plans': PricingPlansSelect<false> | PricingPlansSelect<true>;
+    downloads: DownloadsSelect<false> | DownloadsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -166,13 +168,15 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Zdjęcia do strony. Dozwolone formaty: JPG, JPEG, PNG, WebP, AVIF i GIF. Maksymalny rozmiar: 12 MB. Po przesłaniu uzupełnij tekst alternatywny i kliknij Zapisz. Zdjęć HEIC z iPhone’a użyj dopiero po zapisaniu ich jako JPG.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
   id: number;
   /**
-   * Opis obrazu dla dostępności i SEO.
+   * Opis obrazu dla osób, które go nie widzą, i dla wyszukiwarek. Dozwolone formaty: JPG, JPEG, PNG, WebP, AVIF i GIF. Maksymalny rozmiar: 12 MB.
    */
   alt: string;
   prefix?: string | null;
@@ -260,6 +264,80 @@ export interface Post {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Każde nagranie to film z YouTube. Na stronie pojawiają się tylko pozycje z zaznaczonym „Aktywne”.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos".
+ */
+export interface Video {
+  id: number;
+  title: string;
+  description?: string | null;
+  /**
+   * Adres URL — wklej link do filmu z YouTube, np. https://www.youtube.com/watch?v=…
+   */
+  youtubeUrl: string;
+  /**
+   * Wypełniane automatycznie na podstawie adresu URL.
+   */
+  youtubeVideoId?: string | null;
+  thumbnail?: (number | null) | Media;
+  category?: ('nagranie' | 'lekcja' | 'wystep' | 'inne') | null;
+  featured?: boolean | null;
+  /**
+   * Aktywna — określa, czy element jest widoczny na stronie.
+   */
+  active?: boolean | null;
+  displayOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Wyświetlane są wyłącznie zatwierdzone opinie. Nie dodawaj fikcyjnych treści.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  authorName: string;
+  content: string;
+  /**
+   * Tylko zatwierdzone opinie pojawiają się na stronie.
+   */
+  approved?: boolean | null;
+  displayOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lesson-offers".
+ */
+export interface LessonOffer {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  icon?: ('music' | 'guitar' | 'user' | 'target' | 'book' | 'star') | null;
+  image?: (number | null) | Media;
+  targetAudience?: string | null;
+  features?:
+    | {
+        feature: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Opcjonalne powiązanie z pozycją cennika.
+   */
+  optionalPricingPlan?: (number | null) | PricingPlan;
+  active?: boolean | null;
+  displayOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pricing-plans".
  */
@@ -304,70 +382,37 @@ export interface PricingPlan {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "lesson-offers".
- */
-export interface LessonOffer {
-  id: number;
-  title: string;
-  slug: string;
-  description: string;
-  icon?: ('music' | 'guitar' | 'user' | 'target' | 'book' | 'star') | null;
-  image?: (number | null) | Media;
-  targetAudience?: string | null;
-  features?:
-    | {
-        feature: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Opcjonalne powiązanie z pozycją cennika.
-   */
-  optionalPricingPlan?: (number | null) | PricingPlan;
-  active?: boolean | null;
-  displayOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "videos".
- */
-export interface Video {
-  id: number;
-  title: string;
-  description?: string | null;
-  youtubeUrl: string;
-  /**
-   * Wypełniane automatycznie na podstawie adresu URL.
-   */
-  youtubeVideoId?: string | null;
-  thumbnail?: (number | null) | Media;
-  category?: ('nagranie' | 'lekcja' | 'wystep' | 'inne') | null;
-  featured?: boolean | null;
-  active?: boolean | null;
-  displayOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Wyświetlane są wyłącznie zatwierdzone opinie. Nie dodawaj fikcyjnych treści.
+ * Pliki PDF i inne materiały na podstronie „Do pobrania”. Na stronie widać tylko pozycje z zaznaczonym „Aktywny”.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials".
+ * via the `definition` "downloads".
  */
-export interface Testimonial {
+export interface Download {
   id: number;
-  authorName: string;
-  content: string;
+  title: string;
   /**
-   * Tylko zatwierdzone opinie pojawiają się na stronie.
+   * Krótko napisz, co jest w pliku. Opis pojawia się obok przycisku pobierania.
    */
-  approved?: boolean | null;
+  description?: string | null;
+  /**
+   * Aktywna — określa, czy element jest widoczny na stronie.
+   */
+  active?: boolean | null;
+  /**
+   * Mniejsza liczba oznacza wyższą pozycję na liście.
+   */
   displayOrder?: number | null;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -437,20 +482,24 @@ export interface PayloadLockedDocument {
         value: number | Post;
       } | null)
     | ({
-        relationTo: 'pricing-plans';
-        value: number | PricingPlan;
-      } | null)
-    | ({
-        relationTo: 'lesson-offers';
-        value: number | LessonOffer;
-      } | null)
-    | ({
         relationTo: 'videos';
         value: number | Video;
       } | null)
     | ({
         relationTo: 'testimonials';
         value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'lesson-offers';
+        value: number | LessonOffer;
+      } | null)
+    | ({
+        relationTo: 'pricing-plans';
+        value: number | PricingPlan;
+      } | null)
+    | ({
+        relationTo: 'downloads';
+        value: number | Download;
       } | null)
     | ({
         relationTo: 'pages';
@@ -606,29 +655,30 @@ export interface PostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pricing-plans_select".
+ * via the `definition` "videos_select".
  */
-export interface PricingPlansSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
+export interface VideosSelect<T extends boolean = true> {
+  title?: T;
   description?: T;
-  type?: T;
-  durationMinutes?: T;
-  lessonCount?: T;
-  priceAmount?: T;
-  currency?: T;
-  promotionalPriceAmount?: T;
-  validityDays?: T;
-  features?:
-    | T
-    | {
-        feature?: T;
-        id?: T;
-      };
-  highlighted?: T;
+  youtubeUrl?: T;
+  youtubeVideoId?: T;
+  thumbnail?: T;
+  category?: T;
+  featured?: T;
   active?: T;
   displayOrder?: T;
-  additionalNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  authorName?: T;
+  content?: T;
+  approved?: T;
+  displayOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -657,32 +707,52 @@ export interface LessonOffersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "videos_select".
+ * via the `definition` "pricing-plans_select".
  */
-export interface VideosSelect<T extends boolean = true> {
-  title?: T;
+export interface PricingPlansSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
   description?: T;
-  youtubeUrl?: T;
-  youtubeVideoId?: T;
-  thumbnail?: T;
-  category?: T;
-  featured?: T;
+  type?: T;
+  durationMinutes?: T;
+  lessonCount?: T;
+  priceAmount?: T;
+  currency?: T;
+  promotionalPriceAmount?: T;
+  validityDays?: T;
+  features?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  highlighted?: T;
   active?: T;
   displayOrder?: T;
+  additionalNotes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials_select".
+ * via the `definition` "downloads_select".
  */
-export interface TestimonialsSelect<T extends boolean = true> {
-  authorName?: T;
-  content?: T;
-  approved?: T;
+export interface DownloadsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  active?: T;
   displayOrder?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -738,27 +808,108 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Teksty strony, menu i SEO. Po zmianach kliknij „Zapisz”. Pliki i wpisy są w sekcjach Treści oraz Pliki.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */
 export interface SiteSetting {
   id: number;
-  siteName: string;
-  tagline?: string | null;
-  siteDescription?: string | null;
   /**
-   * Oficjalny logotyp. Jeśli puste — używane jest domyślne logo z public/images/szesc-strun-logo.jpeg.
+   * Nowa linia w tekście tworzy drugą linię nagłówka.
    */
-  siteLogo?: (number | null) | Media;
+  heroHeading?: string | null;
+  heroDescription?: string | null;
   /**
-   * Osobny wariant do stopki. Jeśli puste — używane jest logo główne lub domyślne.
+   * Przycisk w sekcji powitalnej. Przycisk w menu ustawiasz w zakładce Nawigacja.
    */
-  footerLogo?: (number | null) | Media;
+  heroCTA?: string | null;
   /**
-   * Kwadratowa ikona (najlepiej symbol łuku ze strunami). Jeśli puste — domyślne pliki z public/icons.
+   * Odznacz, aby ukryć całą sekcję na stronie głównej.
    */
-  favicon?: (number | null) | Media;
+  showAboutPreview?: boolean | null;
+  /**
+   * Nadtytuł — mały tekst wyświetlany nad głównym nagłówkiem sekcji.
+   */
+  aboutPreviewEyebrow?: string | null;
+  aboutPreviewTitle?: string | null;
+  aboutPreviewLead?: string | null;
+  aboutPreviewText?: string | null;
+  aboutPreviewButtonLabel?: string | null;
+  /**
+   * Adres URL — dokąd ma prowadzić przycisk lub odnośnik.
+   */
+  aboutPreviewButtonHref?: string | null;
+  /**
+   * Opcjonalne. Puste pole zostawia sekcję samą z tekstem, tak jak dotychczas. Zdjęcie w górnej części strony ustawiasz niżej jako „Zdjęcie nauczyciela” w zakładce O mnie.
+   */
+  aboutPreviewImage?: (number | null) | Media;
+  /**
+   * Odznacz, aby ukryć całą sekcję na stronie głównej.
+   */
+  showWhySection?: boolean | null;
+  /**
+   * Nadtytuł — mały tekst wyświetlany nad głównym nagłówkiem sekcji.
+   */
+  whyEyebrow?: string | null;
+  whyTitle?: string | null;
+  whyDescription?: string | null;
+  /**
+   * Kolejność zmienisz, przeciągając elementy. Numery 01, 02, 03 powstają automatycznie z kolejności widocznych pozycji.
+   */
+  whyPoints?:
+    | {
+        title: string;
+        text: string;
+        /**
+         * Aktywna — określa, czy element jest widoczny na stronie. Odznacz, aby ukryć element bez usuwania.
+         */
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Odznacz, aby ukryć całą sekcję, także gdy nagrania już są dodane.
+   */
+  showRecordingsSection?: boolean | null;
+  /**
+   * Nadtytuł — mały tekst wyświetlany nad głównym nagłówkiem sekcji.
+   */
+  recordingsEyebrow?: string | null;
+  recordingsTitle?: string | null;
+  recordingsDescription?: string | null;
+  recordingsButtonLabel?: string | null;
+  /**
+   * Adres URL — dokąd ma prowadzić przycisk lub odnośnik.
+   */
+  recordingsButtonHref?: string | null;
+  /**
+   * Dotyczy strony głównej. Same filmy dodajesz w kolekcji Nagrania.
+   */
+  recordingsEmptyBehavior?: ('message' | 'hide') | null;
+  recordingsEmptyMessage?: string | null;
+  recordingsPageTitle?: string | null;
+  recordingsPageIntro?: string | null;
+  /**
+   * Używane w nagłówkach, stopce i danych kontaktowych.
+   */
   teacherName: string;
+  /**
+   * Duże zdjęcie w sekcji powitalnej na stronie głównej.
+   */
+  teacherPhoto?: (number | null) | Media;
+  /**
+   * Nadtytuł — mały tekst wyświetlany nad głównym nagłówkiem sekcji.
+   */
+  aboutEyebrow?: string | null;
+  /**
+   * Jeśli puste, używane jest imię i nazwisko.
+   */
+  aboutHeading?: string | null;
+  aboutIntro?: string | null;
+  /**
+   * Główny tekst strony O mnie. Zostaw puste, aby pokazać dotychczasowy krótki wstęp.
+   */
   teacherBiography?: {
     root: {
       type: string;
@@ -774,7 +925,171 @@ export interface SiteSetting {
     };
     [k: string]: unknown;
   } | null;
-  teacherPhoto?: (number | null) | Media;
+  teacherExperienceHeading?: string | null;
+  /**
+   * Puste pole ukrywa tę część strony. Nie dodawaj treści, których nie chcesz publikować.
+   */
+  teacherExperience?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  teacherMethodHeading?: string | null;
+  /**
+   * Puste pole ukrywa tę część strony.
+   */
+  teacherMethod?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Opcjonalne zdjęcie pod nagłówkiem. To nie jest zdjęcie z sekcji powitalnej.
+   */
+  aboutPhoto?: (number | null) | Media;
+  /**
+   * Dodatkowe zdjęcia na stronie O mnie. Pusta galeria się nie wyświetla.
+   */
+  aboutGallery?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        /**
+         * Aktywna — określa, czy element jest widoczny na stronie.
+         */
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Kolejne bloki tekstu pod biografią. Kolejność zmienisz, przeciągając sekcje.
+   */
+  aboutSections?:
+    | {
+        heading?: string | null;
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Aktywna — określa, czy element jest widoczny na stronie.
+         */
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  aboutButtons?:
+    | {
+        label: string;
+        /**
+         * Strona tej witryny albo adres prowadzący poza nią, na przykład panel kursów.
+         */
+        linkType: 'internal' | 'external';
+        /**
+         * Adres URL — dokąd ma prowadzić przycisk lub odnośnik. Dla stron tej witryny zaczyna się od ukośnika, np. /o-mnie albo /do-pobrania.
+         */
+        internalPath?: string | null;
+        /**
+         * Pełny adres zaczynający się od https://. Dla pozycji „Kursy” wpisz tu adres panelu kursów, gdy będzie znany. Puste pole nie tworzy odnośnika.
+         */
+        externalUrl?: string | null;
+        openInNewTab?: boolean | null;
+        /**
+         * Aktywna — określa, czy element jest widoczny na stronie.
+         */
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Tytuł widoczny w Google i przy udostępnianiu strony O mnie.
+   */
+  aboutSeoTitle?: string | null;
+  aboutSeoDescription?: string | null;
+  /**
+   * To jedyne menu witryny — u góry strony i w stopce. Kolejność zmienisz, przeciągając pozycje. Odznacz „Aktywna”, aby ukryć pozycję bez usuwania. „Cennik” jest ukryty, ale strona /cennik nadal działa. „Kursy” włączysz dopiero po wpisaniu prawdziwego adresu panelu.
+   */
+  navigation?:
+    | {
+        label: string;
+        /**
+         * Strona tej witryny albo adres prowadzący poza nią, na przykład panel kursów.
+         */
+        linkType: 'internal' | 'external';
+        /**
+         * Adres URL — dokąd ma prowadzić przycisk lub odnośnik. Dla stron tej witryny zaczyna się od ukośnika, np. /o-mnie albo /do-pobrania.
+         */
+        internalPath?: string | null;
+        /**
+         * Pełny adres zaczynający się od https://. Dla pozycji „Kursy” wpisz tu adres panelu kursów, gdy będzie znany. Puste pole nie tworzy odnośnika.
+         */
+        externalUrl?: string | null;
+        openInNewTab?: boolean | null;
+        /**
+         * Aktywna — określa, czy element jest widoczny na stronie. Odznacz, aby ukryć pozycję bez jej usuwania.
+         */
+        active?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Przycisk po prawej stronie menu. Domyślnie „Umów lekcję” prowadzi do strony Kontakt.
+   */
+  navCta: {
+    label?: string | null;
+    /**
+     * Odznacz, aby schować przycisk bez usuwania jego treści.
+     */
+    active?: boolean | null;
+    /**
+     * Strona tej witryny albo adres prowadzący poza nią, na przykład panel kursów.
+     */
+    linkType: 'internal' | 'external';
+    /**
+     * Adres URL — dokąd ma prowadzić przycisk lub odnośnik. Dla stron tej witryny zaczyna się od ukośnika, np. /o-mnie albo /do-pobrania.
+     */
+    internalPath?: string | null;
+    /**
+     * Pełny adres zaczynający się od https://. Dla pozycji „Kursy” wpisz tu adres panelu kursów, gdy będzie znany. Puste pole nie tworzy odnośnika.
+     */
+    externalUrl?: string | null;
+    openInNewTab?: boolean | null;
+  };
+  /**
+   * Tekst w lewej kolumnie stopki. Jeśli puste, używany jest opis strony z zakładki Ogólne. Odnośniki w stopce pochodzą z zakładki Nawigacja. Polityka prywatności jest zawsze na dole stopki.
+   */
+  footerNote?: string | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
   /**
@@ -786,9 +1101,39 @@ export interface SiteSetting {
   lessonsInPerson?: boolean | null;
   facebookUrl?: string | null;
   youtubeUrl?: string | null;
-  heroHeading?: string | null;
-  heroDescription?: string | null;
-  heroCTA?: string | null;
+  /**
+   * Nadtytuł — mały tekst wyświetlany nad głównym nagłówkiem sekcji. Same pliki dodajesz w kolekcji „Materiały do pobrania”.
+   */
+  downloadsEyebrow?: string | null;
+  downloadsTitle?: string | null;
+  downloadsDescription?: string | null;
+  /**
+   * Ten tekst zobaczy odwiedzający, dopóki nie opublikujesz żadnego materiału.
+   */
+  downloadsEmptyMessage?: string | null;
+  downloadsSeoTitle?: string | null;
+  downloadsSeoDescription?: string | null;
+  siteName: string;
+  tagline?: string | null;
+  /**
+   * Krótki opis używany także w stopce, jeśli zakładka Stopka nie ma własnego tekstu.
+   */
+  siteDescription?: string | null;
+  /**
+   * Oficjalny logotyp. Jeśli puste — używane jest domyślne logo z public/images/szesc-strun-logo.jpeg.
+   */
+  siteLogo?: (number | null) | Media;
+  /**
+   * Osobny wariant do stopki. Jeśli puste — używane jest logo główne lub domyślne.
+   */
+  footerLogo?: (number | null) | Media;
+  /**
+   * Kwadratowa ikona (najlepiej symbol łuku ze strunami). Jeśli puste — domyślne pliki z public/icons.
+   */
+  favicon?: (number | null) | Media;
+  /**
+   * Domyślny tytuł strony głównej. SEO podstron O mnie i Do pobrania ustawisz w ich zakładkach.
+   */
   seoDefaultTitle?: string | null;
   seoDefaultDescription?: string | null;
   updatedAt?: string | null;
@@ -799,15 +1144,101 @@ export interface SiteSetting {
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
-  siteName?: T;
-  tagline?: T;
-  siteDescription?: T;
-  siteLogo?: T;
-  footerLogo?: T;
-  favicon?: T;
+  heroHeading?: T;
+  heroDescription?: T;
+  heroCTA?: T;
+  showAboutPreview?: T;
+  aboutPreviewEyebrow?: T;
+  aboutPreviewTitle?: T;
+  aboutPreviewLead?: T;
+  aboutPreviewText?: T;
+  aboutPreviewButtonLabel?: T;
+  aboutPreviewButtonHref?: T;
+  aboutPreviewImage?: T;
+  showWhySection?: T;
+  whyEyebrow?: T;
+  whyTitle?: T;
+  whyDescription?: T;
+  whyPoints?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        active?: T;
+        id?: T;
+      };
+  showRecordingsSection?: T;
+  recordingsEyebrow?: T;
+  recordingsTitle?: T;
+  recordingsDescription?: T;
+  recordingsButtonLabel?: T;
+  recordingsButtonHref?: T;
+  recordingsEmptyBehavior?: T;
+  recordingsEmptyMessage?: T;
+  recordingsPageTitle?: T;
+  recordingsPageIntro?: T;
   teacherName?: T;
-  teacherBiography?: T;
   teacherPhoto?: T;
+  aboutEyebrow?: T;
+  aboutHeading?: T;
+  aboutIntro?: T;
+  teacherBiography?: T;
+  teacherExperienceHeading?: T;
+  teacherExperience?: T;
+  teacherMethodHeading?: T;
+  teacherMethod?: T;
+  aboutPhoto?: T;
+  aboutGallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        active?: T;
+        id?: T;
+      };
+  aboutSections?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        active?: T;
+        id?: T;
+      };
+  aboutButtons?:
+    | T
+    | {
+        label?: T;
+        linkType?: T;
+        internalPath?: T;
+        externalUrl?: T;
+        openInNewTab?: T;
+        active?: T;
+        id?: T;
+      };
+  aboutSeoTitle?: T;
+  aboutSeoDescription?: T;
+  navigation?:
+    | T
+    | {
+        label?: T;
+        linkType?: T;
+        internalPath?: T;
+        externalUrl?: T;
+        openInNewTab?: T;
+        active?: T;
+        id?: T;
+      };
+  navCta?:
+    | T
+    | {
+        label?: T;
+        active?: T;
+        linkType?: T;
+        internalPath?: T;
+        externalUrl?: T;
+        openInNewTab?: T;
+      };
+  footerNote?: T;
   contactEmail?: T;
   contactPhone?: T;
   locationCity?: T;
@@ -816,9 +1247,18 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   lessonsInPerson?: T;
   facebookUrl?: T;
   youtubeUrl?: T;
-  heroHeading?: T;
-  heroDescription?: T;
-  heroCTA?: T;
+  downloadsEyebrow?: T;
+  downloadsTitle?: T;
+  downloadsDescription?: T;
+  downloadsEmptyMessage?: T;
+  downloadsSeoTitle?: T;
+  downloadsSeoDescription?: T;
+  siteName?: T;
+  tagline?: T;
+  siteDescription?: T;
+  siteLogo?: T;
+  footerLogo?: T;
+  favicon?: T;
   seoDefaultTitle?: T;
   seoDefaultDescription?: T;
   updatedAt?: T;
