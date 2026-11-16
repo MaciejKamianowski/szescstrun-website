@@ -8,7 +8,7 @@ import { RichText } from '@/components/rich-text'
 import { JsonLd } from '@/components/seo/json-ld'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
-import { getMediaAlt, getMediaUrl } from '@/lib/media'
+import { getMediaUrl, resolveGalleryImages, resolveRenderableMedia } from '@/lib/media'
 import { getPostBySlug, getRelatedPosts, getSiteSettings } from '@/lib/queries'
 import { buildMetadata, firstNonEmpty } from '@/lib/seo'
 import {
@@ -48,8 +48,10 @@ export default async function PostPage({ params }: { params: Params }) {
   if (!post) notFound()
 
   const [related, settings] = await Promise.all([getRelatedPosts(post), getSiteSettings()])
-  const image = post.featuredImage as Media | number | null | undefined
-  const imageUrl = getMediaUrl(image)
+  const featured = post.featuredImage as Media | number | null | undefined
+  const imageUrl = getMediaUrl(featured)
+  const featuredImage = resolveRenderableMedia(featured, post.title)
+  const galleryImages = resolveGalleryImages(post.gallery, post.title)
 
   return (
     <>
@@ -94,11 +96,11 @@ export default async function PostPage({ params }: { params: Params }) {
             </div>
           </Reveal>
 
-          {imageUrl ? (
+          {featuredImage ? (
             <Reveal delay={0.05} className="relative mt-10 aspect-[16/9] overflow-hidden">
               <Image
-                src={imageUrl}
-                alt={getMediaAlt(image, post.title)}
+                src={featuredImage.src}
+                alt={featuredImage.alt}
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 768px"
@@ -111,24 +113,19 @@ export default async function PostPage({ params }: { params: Params }) {
             <RichText data={post.content} />
           </Reveal>
 
-          {post.gallery && post.gallery.length > 0 ? (
+          {galleryImages.length > 0 ? (
             <Reveal delay={0.1} className="mt-12 grid gap-4 sm:grid-cols-2">
-              {post.gallery.map((item, index) => {
-                const galleryImage = item.image as Media | number
-                const url = getMediaUrl(galleryImage)
-                if (!url) return null
-                return (
-                  <div key={`${post.id}-gallery-${index}`} className="relative aspect-[4/3]">
-                    <Image
-                      src={url}
-                      alt={getMediaAlt(galleryImage, `${post.title} — zdjęcie ${index + 1}`)}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 50vw"
-                      className="object-cover"
-                    />
-                  </div>
-                )
-              })}
+              {galleryImages.map((item, index) => (
+                <div key={`${post.id}-gallery-${index}`} className="relative aspect-[4/3]">
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    className="object-cover"
+                  />
+                </div>
+              ))}
             </Reveal>
           ) : null}
         </Container>

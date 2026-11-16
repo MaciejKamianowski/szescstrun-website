@@ -6,7 +6,7 @@ import path from 'path'
 import { buttonVariants } from '@/components/ui/button'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
-import { getMediaUrl } from '@/lib/media'
+import { getMediaImageSrc } from '@/lib/media'
 import { cn } from '@/lib/utils'
 import type { Media, SiteSetting } from '@/payload-types'
 
@@ -21,7 +21,7 @@ function resolveHeroImage(settings: SiteSetting): {
   useNextImage: boolean
 } {
   const cmsPhoto = settings.teacherPhoto as Media | number | null | undefined
-  const cmsUrl = getMediaUrl(cmsPhoto)
+  const cmsUrl = getMediaImageSrc(cmsPhoto)
 
   if (cmsUrl && typeof cmsPhoto === 'object' && cmsPhoto) {
     return {

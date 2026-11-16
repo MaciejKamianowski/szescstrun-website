@@ -1,5 +1,5 @@
 import type { Media, SiteSetting } from '@/payload-types'
-import { getMediaUrl } from '@/lib/media'
+import { getMediaImageSrc, getMediaUrl } from '@/lib/media'
 
 export const LOGO_ALT = 'Sześć Strun — Zacznij grać świadomie'
 
@@ -24,7 +24,7 @@ export type BrandLogo = {
 
 function fromMedia(media: Media | number | null | undefined, fallbackAlt: string): BrandLogo | null {
   if (!media || typeof media === 'number') return null
-  const src = getMediaUrl(media)
+  const src = getMediaImageSrc(media)
   if (!src) return null
 
   return {

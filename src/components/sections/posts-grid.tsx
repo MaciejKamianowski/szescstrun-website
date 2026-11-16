@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Container } from '@/components/ui/container'
 import { Reveal } from '@/components/ui/reveal'
 import { SectionHeading } from '@/components/ui/section-heading'
-import { getMediaAlt, getMediaUrl } from '@/lib/media'
+import { resolveRenderableMedia } from '@/lib/media'
 import type { Media, Post } from '@/payload-types'
 
 const categoryLabels: Record<string, string> = {
@@ -49,17 +49,19 @@ export function PostsGrid({
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post, index) => {
-              const image = post.featuredImage as Media | number | null | undefined
-              const imageUrl = getMediaUrl(image)
+              const image = resolveRenderableMedia(
+                post.featuredImage as Media | number | null | undefined,
+                post.title,
+              )
 
               return (
                 <Reveal key={post.id} delay={index * 0.05}>
                   <article className="group flex h-full flex-col overflow-hidden border border-border bg-background-secondary transition-colors hover:border-accent/40">
-                    {imageUrl ? (
+                    {image ? (
                       <div className="relative aspect-[16/10] overflow-hidden">
                         <Image
-                          src={imageUrl}
-                          alt={getMediaAlt(image, post.title)}
+                          src={image.src}
+                          alt={image.alt}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
                           className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"

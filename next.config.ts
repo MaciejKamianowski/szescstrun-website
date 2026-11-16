@@ -42,6 +42,9 @@ const nextConfig: NextConfig = {
   // Required by Dockerfile runner stage (Next standalone output)
   output: 'standalone',
   images: {
+    // Payload proxy files are served by this app. Pass them to next/image as
+    // paths (`/api/media/file/...`). Absolute same-origin URLs are remote and
+    // return 400 ("url" parameter is not allowed) — this host is not listed below.
     localPatterns: [
       {
         pathname: '/api/media/file/**',
